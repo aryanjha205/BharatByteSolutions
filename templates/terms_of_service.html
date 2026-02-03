@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service | BharatByteSolutions</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .policy-container {
+            padding: 150px 10% 80px;
+            max-width: 900px;
+            margin: 0 auto;
+            color: var(--text-muted);
+        }
+
+        .policy-container h1 {
+            font-family: var(--font-heading);
+            color: var(--text-main);
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .policy-container h2 {
+            font-family: var(--font-heading);
+            color: var(--text-main);
+            font-size: 1.8rem;
+            margin-top: 40px;
+            margin-bottom: 15px;
+        }
+
+        .policy-container p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+
+        .policy-container ul {
+            margin-bottom: 15px;
+            padding-left: 20px;
+        }
+
+        .policy-container li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body class="loading">
+
+    <!-- Navigation -->
+    <header id="header">
+        <nav class="navbar">
+            <a href="{{ url_for('index') }}" class="logo">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="BharatByteSolutions Logo" class="logo-img">
+            </a>
+            <div class="menu-toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link">Home</a></li>
+                <li class="nav-item">
+                    <a href="{{ url_for('index') }}#contact" class="nav-link btn-glow">Contact Us</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="policy-container">
+            <h1>Terms of Service</h1>
+            <p>Last updated: February 01, 2026</p>
+
+            <p>Welcome to BharatByteSolutions! These Terms of Service ("Terms") govern your use of our website and
+                services. By
+                accessing or using our services, you agree to be bound by these Terms.</p>
+
+            <h2>1. Acceptance of Terms</h2>
+            <p>By accessing this website, you accept these Terms in full. If you disagree with any part of these terms
+                and conditions, you must not use our website or services.</p>
+
+            <h2>2. Intellectual Property</h2>
+            <p>Unless otherwise stated, BharatByteSolutions and/or its licensors own the intellectual property rights
+                for all
+                material on BharatByteSolutions. All intellectual property rights are reserved. You may access this for
+                your own
+                personal use subjected to restrictions set in these terms.</p>
+
+            <h2>3. Services</h2>
+            <p>BharatByteSolutions provides digital solutions including web development, app development, and AI
+                integration. We
+                reserve the right to modify or discontinue any service at any time without notice.</p>
+
+            <h2>4. User Responsibilities</h2>
+            <p>You agree not to use our website for any unlawful purpose or in any way that could harm our reputation or
+                digital infrastructure.</p>
+
+            <h2>5. Limitation of Liability</h2>
+            <p>In no event shall BharatByteSolutions, nor any of its officers, directors, and employees, be held liable
+                for
+                anything arising out of or in any way connected with your use of this website.</p>
+
+            <h2>6. Governing Law</h2>
+            <p>These Terms shall be governed by and interpreted in accordance with the laws of the jurisdiction in which
+                BharatByteSolutions operates.</p>
+
+            <h2>7. Contact Us</h2>
+            <p>If you have any questions about these Terms, please contact us at legal@bharatbytesolutions.com.</p>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2026 BharatByteSolutions. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="{{ url_for('privacy_policy') }}">Privacy Policy</a>
+                <a href="{{ url_for('terms_of_service') }}">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>
