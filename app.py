@@ -13,8 +13,8 @@ import threading
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'aryankjhaa@gmail.com'
-app.config['MAIL_PASSWORD'] = 'vcxh mklm ardl hvrl'
+app.config['MAIL_USERNAME'] = 'bharatbyte.com@gmail.com'
+app.config['MAIL_PASSWORD'] = 'jcnn jcnp ydlb yoel'
 
 def send_email_thread(subject, recipient, body, is_html=False):
     try:
@@ -244,3 +244,4 @@ def contact():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
