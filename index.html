@@ -1,280 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="BharatByteSolutions - Building Digital Solutions That Grow Your Business. Premium Web & App Development using AI and Next-Gen Tech.">
-    <title>BharatByteSolutions | Future-Ready Digital Solutions</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bharat Byte Solutions</title>
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
-        rel="stylesheet">
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
 
-    <!-- Icons -->
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background: linear-gradient(-45deg,#0f2027,#203a43,#2c5364,#000428);
+    background-size:400% 400%;
+    animation: gradientMove 12s ease infinite;
+    color:white;
+    overflow:hidden;
+}
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
-    <link rel="apple-touch-icon" href="{{ url_for('static', filename='logo.png') }}">
-    <meta name="theme-color" content="#030305">
+@keyframes gradientMove{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+.container{
+    text-align:center;
+    padding:50px;
+    backdrop-filter: blur(15px);
+    background: rgba(255,255,255,0.08);
+    border-radius:25px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.6);
+    transform: perspective(1000px) rotateX(8deg) rotateY(-8deg);
+    transition:0.5s;
+}
+
+.container:hover{
+    transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1.05);
+}
+
+.logo{
+    width:120px;
+    margin-bottom:25px;
+    filter: drop-shadow(0px 0px 20px rgba(255,255,255,0.6));
+}
+
+h1{
+    font-size:40px;
+    margin-bottom:15px;
+    letter-spacing:2px;
+}
+
+p{
+    font-size:18px;
+    margin-bottom:30px;
+    opacity:0.8;
+}
+
+.button{
+    display:inline-block;
+    padding:15px 30px;
+    background:linear-gradient(45deg,#00c6ff,#0072ff);
+    border-radius:50px;
+    text-decoration:none;
+    color:white;
+    font-weight:bold;
+    transition:0.4s;
+    box-shadow:0 10px 20px rgba(0,0,0,0.4);
+}
+
+.button:hover{
+    transform:translateY(-5px);
+    box-shadow:0 20px 40px rgba(0,0,0,0.6);
+}
+
+.footer{
+    margin-top:30px;
+    font-size:14px;
+    opacity:0.6;
+}
+</style>
 </head>
 
-<body class="loading">
+<body>
 
-    <!-- Loading Screen -->
-    <div id="loader">
-        <div class="loader-content">
-            <!-- Company Logo -->
-            <div class="logo-container">
-                <img src="{{ url_for('static', filename='logo.png') }}" alt="BharatByteSolutions Logo"
-                    class="loader-logo">
-                <div class="logo-glow"></div>
-            </div>
+<div class="container">
 
-            <!-- Company Name -->
-            <h1 class="company-name">BharatByteSolutions</h1>
-            <p class="company-tagline">Building Digital Solutions That Grow Your Business</p>
+    <img src="https://raw.githubusercontent.com/aryanjha205/BharatByteSolutions/main/static/logo.png" class="logo">
 
-            <!-- Loading Progress -->
-            <div class="loading-progress">
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                </div>
-                <div class="loading-text">Initializing...</div>
-            </div>
+    <h1>Bharat Byte Solutions</h1>
 
-            <!-- Loading Particles -->
-            <div class="loading-particles">
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-            </div>
-        </div>
+    <p>Innovating the Future with Smart Digital Solutions</p>
+
+    <p><strong>🚀 Website Launching Soon</strong></p>
+
+    <a href="https://bharat-byte-solutions.vercel.app/" target="_blank" class="button">
+        Visit Live Version
+    </a>
+
+    <div class="footer">
+        © 2026 Bharat Byte Solutions | Designed by Aryan
     </div>
 
-    <!-- Custom Cursor (Cyber Quad) -->
-    <div id="custom-cursor">
-        <div class="cursor-diamond"></div>
-        <div class="cursor-corners">
-            <span></span><span></span><span></span><span></span>
-        </div>
-    </div>
+</div>
 
-    <!-- Background Canvas -->
-    <canvas id="particle-canvas"></canvas>
-
-    <!-- Navigation -->
-    <header id="header">
-        <nav class="navbar">
-            <a href="#" class="logo">
-                <img src="{{ url_for('static', filename='logo.png') }}" alt="BharatByteSolutions Logo" class="logo-img">
-            </a>
-            <div class="menu-toggle" id="mobile-menu">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
-            <ul class="nav-menu">
-                <li class="nav-item"><a href="#home" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="#services" class="nav-link">Services</a></li>
-
-
-                <li class="nav-item">
-                    <a href="#contact" class="nav-link btn-glow">Contact Us</a>
-                </li>
-            </ul>
-        </nav>
-    </header>
-
-    <main>
-        <!-- Hero Section -->
-        <section id="home" class="hero">
-            <div class="hero-content" data-aos="fade-up">
-                <h1 class="hero-title">
-                    We Build <span class="gradient-text type-effect">Digital Solutions</span><br>
-                    That Grow Your Business
-                </h1>
-                <p class="hero-subtitle">
-                    Transforming ideas into futuristic, scalable digital realities via AI-driven engineering and premium
-                    design.
-                </p>
-                <div class="hero-btns">
-                    <a href="#contact" class="btn btn-primary">Start Your Project <i class='bx bx-rocket'></i></a>
-                    <a href="#services" class="btn btn-outline">Explore Services <i
-                            class='bx bx-right-arrow-alt'></i></a>
-                </div>
-
-                <div class="hero-stats">
-                    <div class="stat-item">
-                        <span class="stat-number" data-target="60">7</span><span>+</span>
-                        <span class="stat-label">Projects</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number" data-target="100">99</span><span>%</span>
-                        <span class="stat-label">Satisfaction</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number" data-target="24">24</span><span>/7</span>
-                        <span class="stat-label">Support</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Services Section -->
-        <section id="services" class="section">
-            <div class="section-header">
-                <span class="section-subtitle">OUR EXPERTISE</span>
-                <h2 class="section-title">Future-Proof Services</h2>
-                <div class="title-bar"></div>
-            </div>
-
-            <div class="services-grid">
-                <!-- Service 1 -->
-                <div class="service-card glass">
-                    <div class="service-icon-wrapper">
-                        <i class='bx bx-code-alt service-icon-lg'></i>
-                    </div>
-                    <h3>Web Development</h3>
-                    <p>High-performance, responsive websites built with modern frameworks and semantic clean code.</p>
-                    <ul class="service-features">
-                        <li><i class='bx bx-check'></i> React / Next.js / Vue</li>
-                        <li><i class='bx bx-check'></i> 3D Web Experiences</li>
-                        <li><i class='bx bx-check'></i> SEO Optimization</li>
-                    </ul>
-                    <a href="#" class="learn-more">Learn More <i class='bx bx-right-arrow-alt'></i></a>
-                    <div class="card-glow"></div>
-                </div>
-
-                <!-- Service 2 -->
-                <div class="service-card glass">
-                    <div class="service-icon-wrapper">
-                        <i class='bx bx-mobile-alt service-icon-lg'></i>
-                    </div>
-                    <h3>Mobile Apps</h3>
-                    <p>Native and cross-platform mobile solutions designed for engagement and performance.</p>
-                    <ul class="service-features">
-                        <li><i class='bx bx-check'></i> iOS & Android</li>
-                        <li><i class='bx bx-check'></i> Flutter / React Native</li>
-                        <li><i class='bx bx-check'></i> UI/UX Design</li>
-                    </ul>
-                    <a href="#" class="learn-more">Learn More <i class='bx bx-right-arrow-alt'></i></a>
-                    <div class="card-glow"></div>
-                </div>
-
-                <!-- Service 3 -->
-                <div class="service-card glass">
-                    <div class="service-icon-wrapper">
-                        <i class='bx bx-brain service-icon-lg'></i>
-                    </div>
-                    <h3>AI & Automation</h3>
-                    <p>Leverage the power of Artificial Intelligence to automate workflows and drive insights.</p>
-                    <ul class="service-features">
-                        <li><i class='bx bx-check'></i> Chatbots & NLP</li>
-                        <li><i class='bx bx-check'></i> Predictive Analytics</li>
-                        <li><i class='bx bx-check'></i> Process Automation</li>
-                    </ul>
-                    <a href="#" class="learn-more">Learn More <i class='bx bx-right-arrow-alt'></i></a>
-                    <div class="card-glow"></div>
-                </div>
-            </div>
-        </section>
-
-
-
-
-
-        <!-- Contact Section -->
-        <section id="contact" class="section">
-            <div class="container">
-                <div class="contact-wrapper glass-panel">
-                    <div class="contact-info">
-                        <h3>Let's Create Together</h3>
-                        <p>Ready to start your next project? Send us a message and we will get back to you within 24
-                            hours.</p>
-
-                        <div class="info-item">
-                            <i class='bx bx-map'></i>
-                            <span>Gandhinagar, Gujarat</span>
-                        </div>
-                        <div class="info-item">
-                            <i class='bx bx-envelope'></i>
-                            <span>bharatbyte.com@gmail.com</span>
-                        </div>
-                        <div class="info-item">
-                            <i class='bx bx-phone'></i>
-                            <span>+91 9835088300</span>
-                        </div>
-
-                        <div class="social-links">
-                            <a href="https://www.linkedin.com/company/bharatbytesolutions"><i
-                                    class='bx bxl-linkedin'></i></a>
-                            <a href="https://x.com/bharatbytecom"><i class='bx bxl-twitter'></i></a>
-                            <a href="https://github.com/BharatByteSolutions"><i class='bx bxl-github'></i></a>
-                            <a href="https://www.instagram.com/bharatbytesolutions/"><i
-                                    class='bx bxl-instagram'></i></a>
-                        </div>
-                    </div>
-
-                    <form id="contact-form" class="contact-form">
-                        <div class="form-group">
-                            <input type="text" id="name" name="name" required placeholder=" ">
-                            <label for="name">Full Name</label>
-                            <span class="highlight"></span>
-                        </div>
-                        <div class="form-group">
-                            <input type="email" id="email" name="email" required placeholder=" ">
-                            <label for="email">Email Address</label>
-                            <span class="highlight"></span>
-                        </div>
-                        <div class="form-group">
-                            <textarea id="message" name="message" rows="4" required placeholder=" "></textarea>
-                            <label for="message">Your Message</label>
-                            <span class="highlight"></span>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-block">
-                            <span>Send Message</span> <i class='bx bx-send'></i>
-                        </button>
-                        <div id="form-status"></div>
-                    </form>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="footer">
-        <div class="footer-content">
-            <p>&copy; 2026 BharatByteSolutions. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="{{ url_for('privacy_policy') }}">Privacy Policy</a>
-                <a href="{{ url_for('terms_of_service') }}">Terms of Service</a>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Scripts -->
-    <!-- Lottie Scripts Removed -->
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register("/sw.js")
-                    .then(registration => {
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    }, err => {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
-            });
-        }
-    </script>
 </body>
-
 </html>
