@@ -1,115 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bharat Byte Solutions</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bharat Byte Solutions - Coming Soon</title>
+    <style>
+        /* --- FONTS --- */
+        @importfonts.googleapis.com/css url('https://2?family=Poppins:wght@300;600;800&family=Righteous&display=swap');
 
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family: 'Segoe UI', sans-serif;
-}
+        /* --- VARIABLES & RESET --- */
+        :root {
+            --primary: #4facfe;
+            --secondary: #00f2fe;
+            --accent: #ff0055;
+            --dark: #0f0c29;
+        }
 
-body{
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background: linear-gradient(-45deg,#0f2027,#203a43,#2c5364,#000428);
-    background-size:400% 400%;
-    animation: gradientMove 12s ease infinite;
-    color:white;
-    overflow:hidden;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-@keyframes gradientMove{
-    0%{background-position:0% 50%;}
-    50%{background-position:100% 50%;}
-    100%{background-position:0% 50%;}
-}
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            height: 100vh;
+            width: 100%;
+            overflow: hidden; /* Prevents scrollbars during animation */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px; /* Essential for 3D effect */
+        }
 
-.container{
-    text-align:center;
-    padding:50px;
-    backdrop-filter: blur(15px);
-    background: rgba(255,255,255,0.08);
-    border-radius:25px;
-    box-shadow:0 20px 40px rgba(0,0,0,0.6);
-    transform: perspective(1000px) rotateX(8deg) rotateY(-8deg);
-    transition:0.5s;
-}
+        /* --- ANIMATED BACKGROUND BLOBS --- */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: 0;
+            animation: float 10s infinite ease-in-out alternate;
+            opacity: 0.8;
+        }
 
-.container:hover{
-    transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1.05);
-}
+        .blob-1 {
+            width: 400px;
+            height: 400px;
+            background: #7000ff;
+            top: -10%;
+            left: -10%;
+        }
 
-.logo{
-    width:120px;
-    margin-bottom:25px;
-    filter: drop-shadow(0px 0px 20px rgba(255,255,255,0.6));
-}
+        .blob-2 {
+            width: 350px;
+            height: 350px;
+            background: #00c6ff;
+            bottom: -10%;
+            right: -10%;
+            animation-delay: -5s;
+        }
 
-h1{
-    font-size:40px;
-    margin-bottom:15px;
-    letter-spacing:2px;
-}
+        .blob-3 {
+            width: 200px;
+            height: 200px;
+            background: #ff0055;
+            top: 40%;
+            left: 40%;
+            animation: pulse 4s infinite;
+        }
 
-p{
-    font-size:18px;
-    margin-bottom:30px;
-    opacity:0.8;
-}
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(30px, 50px) rotate(10deg); }
+        }
 
-.button{
-    display:inline-block;
-    padding:15px 30px;
-    background:linear-gradient(45deg,#00c6ff,#0072ff);
-    border-radius:50px;
-    text-decoration:none;
-    color:white;
-    font-weight:bold;
-    transition:0.4s;
-    box-shadow:0 10px 20px rgba(0,0,0,0.4);
-}
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
 
-.button:hover{
-    transform:translateY(-5px);
-    box-shadow:0 20px 40px rgba(0,0,0,0.6);
-}
+        /* --- MAIN 3D CARD --- */
+        .card-container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 500px;
+            transform-style: preserve-3d; /* Allows children to pop out */
+            transition: transform 0.1s;
+        }
 
-.footer{
-    margin-top:30px;
-    font-size:14px;
-    opacity:0.6;
-}
-</style>
-</head>
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform: translateZ(0px); /* Initial state */
+            transition: all 0.3s ease;
+        }
 
-<body>
+        /* --- LOGO STYLING --- */
+        .logo-wrapper {
+            margin-bottom: 20px;
+            transform: translateZ(40px); /* Moves logo closer to user */
+        }
 
-<div class="container">
+        .logo-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: white;
+            padding: 5px;
+            box-shadow: 0 0 25px rgba(79, 172, 254, 0.6);
+            transition: transform 0.3s;
+        }
 
-    <img src="https://raw.githubusercontent.com/aryanjha205/BharatByteSolutions/main/static/logo.png" class="logo">
+        .logo-img:hover {
+            transform: rotate(360deg) scale(1.1);
+        }
 
-    <h1>Bharat Byte Solutions</h1>
+        /* --- TYPOGRAPHY --- */
+        h1 {
+            font-family: 'Righteous', cursive;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: white;
+            text-transform: uppercase;
+            transform: translateZ(30px); /* 3D Text Depth */
+            text-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+        }
 
-    <p>Innovating the Future with Smart Digital Solutions</p>
+        .gradient-text {
+            background: linear-gradient(to right, #00f260, #0575e6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-    <p><strong>🚀 Website Launching Soon</strong></p>
+        p {
+            color: #d1d1d1;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            transform: translateZ(20px);
+            line-height: 1.6;
+        }
 
-    <a href="https://bharat-byte-solutions.vercel.app/" target="_blank" class="button">
-        Visit Live Version
-    </a>
-
-    <div class="footer">
-        © 2026 Bharat Byte Solutions | Designed by Aryan
-    </div>
-
-</div>
-
-</body>
-</html>
+        /* --- BUTTON --- */
+        .btn {
+            display: inline-block;
+            padding: 15px 45px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            background: linear-gradient(45deg, #ff0055, #ff00aa);
+            box-shadow: 0 10px 20px rgba(255, 0, 85, 0.3);
+            transform: translateZ(50px); /* Button pops
