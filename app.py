@@ -3,6 +3,9 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -20,8 +23,8 @@ import threading
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'aryankjhaa@gmail.com'
-app.config['MAIL_PASSWORD'] = 'qagy riub pxwa dzxv'
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', 'aryankjhaa@gmail.com')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD', 'qagy riub pxwa dzxv')
 
 def send_email_thread(subject, recipient, body, is_html=False):
     try:
