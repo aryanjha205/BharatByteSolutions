@@ -7,14 +7,21 @@ import os
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
+@app.after_request
+def add_cors_headers(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    return response
+
 import threading
 
 # Email Configuration
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'bharatbyte.com@gmail.com'
-app.config['MAIL_PASSWORD'] = 'jcnn jcnp ydlb yoel'
+app.config['MAIL_USERNAME'] = 'aryankjhaa@gmail.com'
+app.config['MAIL_PASSWORD'] = 'qagy riub pxwa dzxv'
 
 def send_email_thread(subject, recipient, body, is_html=False):
     try:
@@ -62,8 +69,10 @@ def sw():
     return app.send_static_file('sw.js')
 
 # API Endpoint for Contact Form
-@app.route('/api/contact', methods=['POST'])
+@app.route('/api/contact', methods=['POST', 'OPTIONS'])
 def contact():
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'success'})
     data = request.json
     name = data.get('name')
     email = data.get('email')
