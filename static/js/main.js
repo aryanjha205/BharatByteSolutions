@@ -255,8 +255,8 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.disabled = true;
 
         // Dynamic API endpoint (local fallback or Vercel production backend)
-        const apiEndpoint = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? '/api/contact'
+        const apiEndpoint = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
+            ? 'http://127.0.0.1:5000/api/contact'
             : 'https://bharatbytesolutions.vercel.app/api/contact'; // Replace with your production Vercel app URL
 
         try {

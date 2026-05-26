@@ -20,16 +20,17 @@ def add_cors_headers(response):
 import threading
 
 # Email Configuration
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
+app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
+app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'True').lower() == 'true'
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', 'aryankjhaa@gmail.com')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD', 'qagy riub pxwa dzxv')
+app.config['MAIL_SENDER'] = os.environ.get('MAIL_SENDER', 'BharatByteSolutions <contact@bharatbytesolutions.com>')
 
 def send_email_thread(subject, recipient, body, is_html=False):
     try:
         msg = MIMEMultipart()
-        msg['From'] = f"BharatByteSolutions <{app.config['MAIL_USERNAME']}>"
+        msg['From'] = app.config['MAIL_SENDER']
         msg['To'] = recipient
         msg['Subject'] = subject
 
