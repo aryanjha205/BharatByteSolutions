@@ -187,6 +187,20 @@ class Notification(db.Model):
 def get_logged_user():
     if 'user_id' in session:
         return User.query.get(session['user_id'])
+    # Resilient fallback: support stateless Decoupled API sessions from GitHub Pages
+    try:
+        if request.is_json:
+            uid = request.json.get('user_id') or request.json.get('lister_id')
+            if uid:
+                return User.query.get(int(uid))
+    except:
+        pass
+    uid = request.args.get('user_id')
+    if uid:
+        try:
+            return User.query.get(int(uid))
+        except:
+            pass
     return None
 
 @app.context_processor
@@ -411,7 +425,10 @@ def api_login():
         'status': 'success',
         'message': 'Login successful!',
         'role': user.role,
-        'is_verified': user.is_verified
+        'is_verified': user.is_verified,
+        'user_id': user.id,
+        'username': user.username,
+        'reward_points': user.reward_points
     })
 
 @app.route('/api/auth/logout', methods=['POST'])
@@ -424,6 +441,44 @@ def api_logout():
 # ----------------------------------------------------
 @app.route('/api/listings', methods=['GET'])
 def api_get_listings():
+    # Fetch specific ID if requested for decoupled static SPA details loading!
+    single_id = request.args.get('id', type=int)
+    if single_id:
+        item = Listing.query.get(single_id)
+        if not item:
+            return jsonify({'status': 'error', 'message': 'Listing not found.'}), 404
+        
+        # Build return dictionary
+        fav_status = False
+        logged_u = get_logged_user()
+        if logged_u:
+            fav_status = Favorite.query.filter_by(user_id=logged_u.id, listing_id=item.id).first() is not None
+
+        item_dict = {
+            'id': item.id,
+            'title': item.title,
+            'description': item.description,
+            'category': item.category,
+            'price': item.price,
+            'address': item.address,
+            'city': item.city,
+            'latitude': item.latitude,
+            'longitude': item.longitude,
+            'images': item.images.split(',') if item.images else [],
+            'videos': item.videos.split(',') if item.videos else [],
+            'amenities': item.amenities.split(',') if item.amenities else [],
+            'gender_preference': item.gender_preference,
+            'food_included': item.food_included,
+            'furnished_status': item.furnished_status,
+            'hygiene_rating': item.hygiene_rating,
+            'vendor_verified': item.vendor_verified,
+            'is_trending': item.is_trending,
+            'is_premium': item.is_premium,
+            'is_favorited': fav_status,
+            'views': item.views_count
+        }
+        return jsonify({'status': 'success', 'data': [item_dict]})
+
     # Fetch all parameters for search & filters
     category = request.args.get('category')
     search = request.args.get('search')
