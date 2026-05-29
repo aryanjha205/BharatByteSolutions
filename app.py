@@ -21,8 +21,11 @@ app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
 # ----------------------------------------------------
 db_url = os.environ.get('DATABASE_URL')
 if not db_url:
-    # Resilient fallback to SQLite if Neon PostgreSQL URL isn't configured
-    db_url = 'sqlite:///bharat_byte.db'
+    # Resilient fallback: Use writeable /tmp/ directory in serverless Vercel, else local SQLite
+    if os.environ.get('VERCEL') == '1':
+        db_url = 'sqlite:////tmp/bharat_byte.db'
+    else:
+        db_url = 'sqlite:///bharat_byte.db'
 else:
     # Neon/PostgreSQL requires psycopg2; enforce sslmode compatibility
     if db_url.startswith("postgres://"):
@@ -1178,6 +1181,12 @@ def seed_data():
             db.session.commit()
             print("Database seeded with sample Bharat Byte listings!")
 
+# Create tables and seed data automatically on startup / import
+with app.app_context():
+    try:
+        seed_data()
+    except Exception as e:
+        print(f"Resilient database startup check warning: {e}")
+
 if __name__ == '__main__':
-    seed_data()
     app.run(debug=True)

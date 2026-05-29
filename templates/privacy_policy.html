@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy | BharatByteSolutions</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .policy-container {
+            padding: 150px 10% 80px;
+            max-width: 900px;
+            margin: 0 auto;
+            color: var(--text-muted);
+        }
+
+        .policy-container h1 {
+            font-family: var(--font-heading);
+            color: var(--text-main);
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .policy-container h2 {
+            font-family: var(--font-heading);
+            color: var(--text-main);
+            font-size: 1.8rem;
+            margin-top: 40px;
+            margin-bottom: 15px;
+        }
+
+        .policy-container p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+
+        .policy-container ul {
+            margin-bottom: 15px;
+            padding-left: 20px;
+        }
+
+        .policy-container li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body class="loading">
+
+    <!-- Navigation -->
+    <header id="header">
+        <nav class="navbar">
+            <a href="{{ url_for('index') }}" class="logo">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="BharatByteSolutions Logo" class="logo-img">
+            </a>
+            <div class="menu-toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link">Home</a></li>
+                <li class="nav-item">
+                    <a href="{{ url_for('index') }}#contact" class="nav-link btn-glow">Contact Us</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="policy-container">
+            <h1>Privacy Policy</h1>
+            <p>Last updated: February 01, 2026</p>
+
+            <p>At BharatByteSolutions, we prioritize your privacy and are committed to protecting your personal data.
+                This Privacy
+                Policy outlines how we collect, use, and safeguard your information when you visit our website or use
+                our services.</p>
+
+            <h2>1. Information We Collect</h2>
+            <p>We may collect the following types of information:</p>
+            <ul>
+                <li><strong>Personal Information:</strong> Name, email address, phone number, and other contact details
+                    provided voluntarily through forms.</li>
+                <li><strong>Usage Data:</strong> Information about your device, browser, IP address, and pages visited
+                    on our site.</li>
+            </ul>
+
+            <h2>2. How We Use Your Information</h2>
+            <p>We use the collected data for the following purposes:</p>
+            <ul>
+                <li>To provide and maintain our services.</li>
+                <li>To communicate with you regarding inquiries, updates, and promotional offers.</li>
+                <li>To improve our website functionality and user experience.</li>
+                <li>To comply with legal obligations.</li>
+            </ul>
+
+            <h2>3. Data Security</h2>
+            <p>We implement advanced security measures to protect your personal data from unauthorized access,
+                alteration, disclosure, or destruction. However, no method of transmission over the internet is 100%
+                secure.</p>
+
+            <h2>4. Third-Party Sharing</h2>
+            <p>We do not sell or rent your personal information to third parties. We may share data with trusted service
+                providers who assist us in operating our website, conducting our business, or serving our users, so long
+                as those parties agree to keep this information confidential.</p>
+
+            <h2>5. Your Rights</h2>
+            <p>You have the right to access, correct, or delete your personal data. If you wish to exercise these
+                rights, please contact us at privacy@bharatbytesolutions.com.</p>
+
+            <h2>6. Changes to This Policy</h2>
+            <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new
+                Privacy Policy on this page.</p>
+
+            <h2>7. Contact Us</h2>
+            <p>If you have any questions about this Privacy Policy, please contact us:</p>
+            <ul>
+                <li>By email: contact@bharatbytesolutions.com</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2026 BharatByteSolutions. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="{{ url_for('privacy_policy') }}">Privacy Policy</a>
+                <a href="{{ url_for('terms_of_service') }}">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>
