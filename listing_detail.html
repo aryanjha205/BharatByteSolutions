@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View verified local street food stalls, student PGs, hostels, tiffin meals, and services in detail on Bharat Byte.">
+    <title>Listing Details | Bharat Byte</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Icons (Boxicons) -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <!-- Leaflet.js Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Custom CSS Stylesheet -->
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="manifest" href="static/manifest.json">
+    <link rel="apple-touch-icon" href="static/logo.png">
+</head>
+<body>
+
+    <!-- Loading Screen Overlay -->
+    <div id="loader">
+        <div class="loader-content">
+            <img src="static/logo.png" alt="Bharat Byte Logo" class="loader-logo mb-3">
+            <h2 class="fw-bold" style="letter-spacing: 1px;">BHARAT BYTE</h2>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <p class="text-muted small">Loading details...</p>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-custom">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center" href="index.html">
+                    <img src="static/logo.png" alt="Bharat Byte Logo" class="me-2" style="height: 40px;">
+                    <span class="fw-bold fs-4 text-primary" data-translate="app_title">Bharat Byte</span>
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html"><i class="bx bx-home-alt"></i> Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="listings.html"><i class="bx bx-map-pin"></i> Explore Nearby</a>
+                        </li>
+                        <li class="nav-item d-none" id="nav-lister-studio">
+                            <a class="nav-link" href="dashboard.html"><i class="bx bx-grid-alt"></i> Lister Studio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="admin_login.html"><i class="bx bx-shield-quarter"></i> Admin Portal</a>
+                        </li>
+                    </ul>
+                    
+                    <!-- Right Controls System -->
+                    <div class="d-flex align-items-center gap-3">
+                        
+                        <!-- Theme Toggle Button -->
+                        <button class="theme-switch-btn" title="Toggle Light/Dark Theme">
+                            <i class="bx bx-moon"></i>
+                        </button>
+                        
+                        <!-- Localizer Translator Switcher -->
+                        <div class="lang-wrapper">
+                            <select id="language-select" class="form-select form-select-sm border-secondary text-dark" style="cursor: pointer; font-weight: 500;">
+                                <option value="en">English (EN)</option>
+                                <option value="hi">हिन्दी (HI)</option>
+                                <option value="gu">ગુજરાતી (GU)</option>
+                            </select>
+                        </div>
+
+                        <!-- Real-time Database Notifications Trigger -->
+                        <div class="dropdown d-none" id="notif-dropdown-wrapper">
+                            <button class="btn btn-outline-secondary position-relative rounded-circle p-2" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px; display: flex; justify-content: center; align-items: center;">
+                                <i class="bx bx-bell fs-5"></i>
+                                <span id="notif-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">0</span>
+                            </button>
+                            <ul id="notif-list" class="dropdown-menu dropdown-menu-end p-2 border-0 shadow-lg" aria-labelledby="notifDropdown" style="width: 320px; border-radius: 12px; background: var(--bg-card); color: var(--text-main);">
+                                <h6 class="dropdown-header text-primary fw-bold mb-2 border-bottom pb-2">Notifications</h6>
+                                <div id="notif-items-container">
+                                    <li class="text-center py-3 text-muted small">No new notifications.</li>
+                                </div>
+                            </ul>
+                        </div>
+
+                        <!-- User Session Dropdown / Auth CTA -->
+                        <div id="auth-cta-container">
+                            <a href="auth.html" class="btn btn-primary px-4"><i class="bx bx-log-in"></i> Sign In</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <section class="py-5">
+            <div class="container">
+                
+                <!-- Navigation Breadcrumbs -->
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none">Home</a></li>
+                        <li class="breadcrumb-item"><a href="listings.html" class="text-decoration-none">Explore</a></li>
+                        <li class="breadcrumb-item active" aria-current="page" id="breadcrumb-title">Listing Details</li>
+                    </ol>
+                </nav>
+
+                <div class="row gy-5">
+                    <!-- Left Side: Images, Specs, Maps, Reviews -->
+                    <div class="col-lg-8">
+                        
+                        <!-- Title Header & Badges -->
+                        <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-3">
+                            <div>
+                                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap" id="badges-container">
+                                    <!-- Dynamic badges injected here -->
+                                </div>
+                                <h1 class="fw-bold text-dark mb-1" id="detail-title">Loading Listing Title...</h1>
+                                <p class="text-muted mb-0"><i class="bx bx-map"></i> <span id="detail-address">Loading location address...</span></p>
+                            </div>
+                            
+                            <!-- Action Actions Buttons -->
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-danger d-flex align-items-center gap-1 favorite-btn-toggle" id="detail-fav-btn">
+                                    <i class="bx bx-heart fs-5" id="detail-fav-icon"></i> Favorite
+                                </button>
+                                <button class="btn btn-outline-secondary d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#reportModal">
+                                    <i class="bx bx-flag fs-5"></i> Report Fake
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Media Gallery -->
+                        <div class="card overflow-hidden border-0 shadow-sm mb-4" style="border-radius: 16px;">
+                            <div id="listingCarousel" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-inner" style="height: 420px;" id="carousel-images-container">
+                                    <div class="carousel-item active h-100">
+                                        <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80" class="d-block w-100 h-100" style="object-fit: cover;" alt="Listing Default Image">
+                                    </div>
+                                </div>
+                                <button class="carousel-control-prev d-none" type="button" data-bs-target="#listingCarousel" data-bs-slide="prev" id="carousel-prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next d-none" type="button" data-bs-target="#listingCarousel" data-bs-slide="next" id="carousel-next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Description & Details -->
+                        <div class="card p-4 border-0 shadow-sm mb-4" style="border-radius: 16px; background-color: var(--bg-card); color: var(--text-main);">
+                            <h4 class="fw-bold mb-3 border-bottom pb-2">Description & Details</h4>
+                            <p style="white-space: pre-line; line-height: 1.7;" id="detail-description">Loading full description details...</p>
+                            
+                            <!-- Specifications Lists -->
+                            <div class="row mt-4 gy-3" id="detail-specifications">
+                                <!-- Specifications dynamically rendered -->
+                            </div>
+                        </div>
+
+                        <!-- Amenities Checklist -->
+                        <div class="card p-4 border-0 shadow-sm mb-4 d-none" id="detail-amenities-card" style="border-radius: 16px; background-color: var(--bg-card); color: var(--text-main);">
+                            <h4 class="fw-bold mb-3 border-bottom pb-2">Amenities & Options</h4>
+                            <div class="row row-cols-2 row-cols-md-4 g-3" id="detail-amenities-container">
+                                <!-- Amenities list injected here -->
+                            </div>
+                        </div>
+
+                        <!-- Specific Location Map Visualization -->
+                        <div class="card p-4 border-0 shadow-sm mb-4" style="border-radius: 16px; background-color: var(--bg-card); color: var(--text-main);">
+                            <h4 class="fw-bold mb-3 border-bottom pb-2">Location Map</h4>
+                            <div id="detail-mini-map" class="border rounded" style="height: 300px; z-index: 10;"></div>
+                        </div>
+
+                        <!-- Reviews and Rating Section -->
+                        <div class="card p-4 border-0 shadow-sm mb-4" style="border-radius: 16px; background-color: var(--bg-card); color: var(--text-main);">
+                            <h4 class="fw-bold mb-3 border-bottom pb-2">Reviews & Star Ratings (<span id="total-reviews-count">0</span>)</h4>
+                            
+                            <!-- Write a review -->
+                            <div id="write-review-container">
+                                <div class="alert alert-warning py-2 mb-4" style="font-size: 0.9rem;">
+                                    Please <a href="auth.html">Sign In</a> to write a review.
+                                </div>
+                            </div>
+
+                            <!-- Reviews list -->
+                            <div id="reviews-list-container" class="d-flex flex-column gap-3">
+                                <p class="text-muted text-center py-3" id="no-reviews-msg">No ratings yet. Be the first to review this service!</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Right Side: Booking Form, inquiry, WhatsApp and Live Chat panels -->
+                    <div class="col-lg-4">
+                        
+                        <!-- Fixed price and quick action box -->
+                        <div class="card p-4 border-0 shadow-lg mb-4 sticky-lg-top" style="border-radius: 16px; top: 100px; background-color: var(--bg-card); color: var(--text-main); z-index: 100;">
+                            <div class="mb-3">
+                                <span class="small text-muted d-block">Monthly Rent / Starting Price</span>
+                                <h2 class="fw-bold text-primary mb-0" id="detail-price">₹0</h2>
+                            </div>
+
+                            <!-- Tabs for Inquiry/Booking/Chat -->
+                            <ul class="nav nav-pills mb-3 d-flex text-center bg-light p-1 rounded" id="bookingTab" role="tablist" style="background: var(--bg-main) !important; border: 1px solid var(--border-color);">
+                                <li class="nav-item flex-fill" role="presentation">
+                                    <button class="nav-link btn-sm active w-100 py-2" id="inquire-tab" data-bs-toggle="tab" data-bs-target="#inquire-pane" type="button" role="tab">Inquiry</button>
+                                </li>
+                                <li class="nav-item flex-fill" role="presentation">
+                                    <button class="nav-link btn-sm w-100 py-2" id="visit-tab" data-bs-toggle="tab" data-bs-target="#visit-pane" type="button" role="tab">Scheduler</button>
+                                </li>
+                                <li class="nav-item flex-fill" role="presentation">
+                                    <button class="nav-link btn-sm w-100 py-2" id="chat-tab" data-bs-toggle="tab" data-bs-target="#chat-pane" type="button" role="tab">Live Chat</button>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content" id="bookingTabContent">
+                                
+                                <!-- Panel 1: Inquiry form -->
+                                <div class="tab-pane fade show active" id="inquire-pane" role="tabpanel">
+                                    <form id="inquiry-submit-form" data-type="inquiry">
+                                        <div class="mb-3">
+                                            <input type="text" id="inq-name" class="form-control form-control-custom" placeholder="Your Full Name" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <input type="email" id="inq-email" class="form-control form-control-custom" placeholder="Your Email Address" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <input type="tel" id="inq-phone" class="form-control form-control-custom" placeholder="Phone / WhatsApp Number" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <textarea id="inq-message" class="form-control form-control-custom" rows="3" placeholder="I am interested in this listing. Please contact me!" required></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold mb-2">Send Inquiry <i class="bx bx-send"></i></button>
+                                    </form>
+                                </div>
+                                
+                                <!-- Panel 2: Visit scheduling -->
+                                <div class="tab-pane fade" id="visit-pane" role="tabpanel">
+                                    <form id="visit-schedule-form" data-type="visit_schedule">
+                                        <div class="mb-3">
+                                            <label class="small fw-semibold text-muted mb-1">Pick Visit Date & Time</label>
+                                            <input type="datetime-local" id="visit-datetime" class="form-control form-control-custom" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <input type="tel" id="visit-phone" class="form-control form-control-custom" placeholder="Your Phone Number" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <textarea id="visit-notes" class="form-control form-control-custom" rows="3" placeholder="Any specific requirements or timings for the visit?"></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-success w-100 py-2 fw-bold mb-2">Schedule Visit <i class="bx bx-calendar"></i></button>
+                                    </form>
+                                </div>
+                                
+                                <!-- Panel 3: Live chat simulated interface -->
+                                <div class="tab-pane fade" id="chat-pane" role="tabpanel">
+                                    <div class="chat-window mb-2" id="live-chat-logs">
+                                        <div class="chat-msg received" id="chat-welcome-msg">
+                                            Namaste! How can I help you find details today?
+                                        </div>
+                                    </div>
+                                    <form id="live-chat-send-form" class="d-flex gap-2">
+                                        <input type="text" id="live-chat-input" class="form-control form-control-custom py-2" placeholder="Type a message..." required>
+                                        <button type="submit" class="btn btn-primary"><i class="bx bx-send"></i></button>
+                                    </form>
+                                </div>
+
+                            </div>
+
+                            <!-- Direct Instant WhatsApp integration -->
+                            <a href="#" id="wa-chat-link" target="_blank" class="btn btn-outline-success w-100 py-2 mt-2 fw-bold d-flex align-items-center justify-content-center gap-2">
+                                <i class="bx bxl-whatsapp fs-4"></i> Chat on WhatsApp
+                            </a>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Report Modal -->
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background: var(--bg-card); color: var(--text-main); border-radius: 12px; border: 1px solid var(--border-color);">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="reportModalLabel"><i class="bx bx-flag text-danger"></i> Report Fake Listing</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--theme-close-btn);"></button>
+                </div>
+                <form id="report-fake-form">
+                    <div class="modal-body py-3">
+                        <p class="small text-muted">Is this stall, room, or service non-existent, fake, copy, or displaying incorrect details? Help us clean the platform by reporting.</p>
+                        <div class="mb-3">
+                            <label class="small fw-semibold mb-1">Reason for Flagging</label>
+                            <textarea id="report-reason" class="form-control form-control-custom" rows="4" placeholder="Describe why this listing is incorrect or fake in detail..." required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger btn-sm">Submit Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap & Leaflet JavaScript Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="static/js/main.js"></script>
+</body>
+</html>

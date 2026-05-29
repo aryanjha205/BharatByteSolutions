@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Access the Administrative Portal on Bharat Byte. Manage user listings, flags, and resolve reports.">
+    <title>Admin Sign In | Bharat Byte</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Icons (Boxicons) -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <!-- Custom CSS Stylesheet -->
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="manifest" href="static/manifest.json">
+    <link rel="apple-touch-icon" href="static/logo.png">
+</head>
+<body>
+
+    <!-- Loading Screen Overlay -->
+    <div id="loader">
+        <div class="loader-content">
+            <img src="static/logo.png" alt="Bharat Byte Logo" class="loader-logo mb-3">
+            <h2 class="fw-bold" style="letter-spacing: 1px;">BHARAT BYTE</h2>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <p class="text-muted small">Loading admin console...</p>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-custom">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center" href="index.html">
+                    <img src="static/logo.png" alt="Bharat Byte Logo" class="me-2" style="height: 40px;">
+                    <span class="fw-bold fs-4 text-primary" data-translate="app_title">Bharat Byte</span>
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html"><i class="bx bx-home-alt"></i> Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="listings.html"><i class="bx bx-map-pin"></i> Explore Nearby</a>
+                        </li>
+                        <li class="nav-item d-none" id="nav-lister-studio">
+                            <a class="nav-link" href="dashboard.html"><i class="bx bx-grid-alt"></i> Lister Studio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="admin_login.html"><i class="bx bx-shield-quarter"></i> Admin Portal</a>
+                        </li>
+                    </ul>
+                    
+                    <!-- Right Controls System -->
+                    <div class="d-flex align-items-center gap-3">
+                        
+                        <!-- Theme Toggle Button -->
+                        <button class="theme-switch-btn" title="Toggle Light/Dark Theme">
+                            <i class="bx bx-moon"></i>
+                        </button>
+                        
+                        <!-- Localizer Translator Switcher -->
+                        <div class="lang-wrapper">
+                            <select id="language-select" class="form-select form-select-sm border-secondary text-dark" style="cursor: pointer; font-weight: 500;">
+                                <option value="en">English (EN)</option>
+                                <option value="hi">हिन्दी (HI)</option>
+                                <option value="gu">ગુજરાતી (GU)</option>
+                            </select>
+                        </div>
+
+                        <!-- Real-time Database Notifications Trigger -->
+                        <div class="dropdown d-none" id="notif-dropdown-wrapper">
+                            <button class="btn btn-outline-secondary position-relative rounded-circle p-2" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px; display: flex; justify-content: center; align-items: center;">
+                                <i class="bx bx-bell fs-5"></i>
+                                <span id="notif-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">0</span>
+                            </button>
+                            <ul id="notif-list" class="dropdown-menu dropdown-menu-end p-2 border-0 shadow-lg" aria-labelledby="notifDropdown" style="width: 320px; border-radius: 12px; background: var(--bg-card); color: var(--text-main);">
+                                <h6 class="dropdown-header text-primary fw-bold mb-2 border-bottom pb-2">Notifications</h6>
+                                <div id="notif-items-container">
+                                    <li class="text-center py-3 text-muted small">No new notifications.</li>
+                                </div>
+                            </ul>
+                        </div>
+
+                        <!-- User Session Dropdown / Auth CTA -->
+                        <div id="auth-cta-container">
+                            <a href="auth.html" class="btn btn-primary px-4"><i class="bx bx-log-in"></i> Sign In</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <section class="py-5 d-flex align-items-center" style="min-height: calc(100vh - 200px);">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-5">
+                        <div class="glass-panel text-center p-5 border-danger">
+                            <div class="mb-4">
+                                <div class="p-3 bg-danger bg-opacity-10 text-danger rounded-circle d-inline-block mb-3" style="width: 70px; height: 70px; display: flex; justify-content: center; align-items: center;">
+                                    <i class="bx bx-shield-quarter fs-1"></i>
+                                </div>
+                                <h3 class="fw-bold mb-1">Administrative Center</h3>
+                                <p class="text-muted small">Protected via Master PIN Authorization</p>
+                            </div>
+
+                            <form id="admin-pin-login-form">
+                                <div class="mb-4">
+                                    <label class="small fw-semibold text-muted d-block text-start mb-2">Enter Administrative Security PIN</label>
+                                    <input type="password" id="admin-pin-input" class="form-control form-control-custom text-center py-3 fs-4 fw-bold letter-spacing-lg" placeholder="••••" maxlength="6" required>
+                                </div>
+                                <button type="submit" class="btn btn-danger w-100 py-3 fw-bold fs-6">Authorize Console <i class="bx bx-key"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Professional Footer -->
+    <footer class="footer-custom mt-5">
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-md-5">
+                    <h5 class="text-primary fw-bold mb-3">Bharat Byte 🇮🇳</h5>
+                    <p class="small text-muted mb-3" style="max-width: 360px;">
+                        India's ultimate all-in-one local discovery and accommodation marketplace. Linking street food lovers, renters, students, and local businesses in a single responsive, verified ecosystem.
+                    </p>
+                    <div class="d-flex gap-3 fs-4 text-secondary">
+                        <a href="#" class="text-reset"><i class="bx bxl-facebook-circle"></i></a>
+                        <a href="#" class="text-reset"><i class="bx bxl-twitter"></i></a>
+                        <a href="#" class="text-reset"><i class="bx bxl-instagram"></i></a>
+                        <a href="#" class="text-reset"><i class="bx bxl-linkedin-square"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="fw-bold mb-3 text-dark">Explore Byte</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2">
+                        <li><a href="listings.html?category=street_food" class="text-decoration-none text-muted">Street Food stalls</a></li>
+                        <li><a href="listings.html?category=pg" class="text-decoration-none text-muted">Student PGs</a></li>
+                        <li><a href="listings.html?category=hostel" class="text-decoration-none text-muted">Boys & Girls Hostels</a></li>
+                        <li><a href="listings.html?category=tiffin" class="text-decoration-none text-muted">Tiffin Services</a></li>
+                        <li><a href="listings.html?category=medical" class="text-decoration-none text-muted">24/7 Medical Pharmacies</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="fw-bold mb-3 text-dark">Legals & Security</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2 mb-4">
+                        <li><a href="privacy_policy.html" class="text-decoration-none text-muted">Privacy Policy</a></li>
+                        <li><a href="terms_of_service.html" class="text-decoration-none text-muted">Terms of Service</a></li>
+                    </ul>
+                    <p class="small text-muted">&copy; 2026 Bharat Byte Solutions Inc. Crafted with Pride across India.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JavaScript Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="static/js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const pinForm = document.getElementById('admin-pin-login-form');
+            const API_BASE_URL = (() => {
+                if (window.location.hostname && !['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+                    return 'https://bharatbytesolutions.vercel.app';
+                }
+                if (window.location.protocol === 'file:' || window.location.port !== '5000') {
+                    return 'http://127.0.0.1:5000';
+                }
+                return '';
+            })();
+
+
+            if (pinForm) {
+                pinForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const pin = document.getElementById('admin-pin-input').value;
+
+                    try {
+                        const res = await fetch(`${API_BASE_URL}/api/admin/login`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ pin: pin })
+                        });
+                        const val = await res.json();
+                        
+                        if (val.status === 'success') {
+                            alert(val.message);
+                            localStorage.setItem('admin_authenticated', 'true');
+                            localStorage.setItem('role', 'admin');
+                            localStorage.setItem('username', 'SuperAdmin');
+                            window.location.href = 'admin_dashboard.html';
+                        } else {
+                            alert(val.message);
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert("Authorization failed.");
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

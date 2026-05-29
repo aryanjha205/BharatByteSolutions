@@ -10,10 +10,12 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from flask_cors import CORS
 
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app, supports_credentials=True)
 app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
 
 # ----------------------------------------------------
@@ -213,16 +215,56 @@ def inject_user_and_notifications():
         unread_count = Notification.query.filter_by(user_id=user.id, is_read=False).count()
     return dict(current_user=user, current_notifications=notifs, unread_notifications_count=unread_count)
 
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://bharatbyte.2bd.net')
+
 # ----------------------------------------------------
-# STANDARD RENDERING ROUTES
+# DECOUPLED REDIRECT ROUTES
 # ----------------------------------------------------
 @app.route('/')
 def index():
+    return redirect(FRONTEND_URL)
+
+@app.route('/listings')
+def listings():
+    return redirect(f"{FRONTEND_URL}/listings.html")
+
+@app.route('/listings/<int:listing_id>')
+def listing_detail(listing_id):
+    listing = Listing.query.get_or_404(listing_id)
+    # Increment views count
+    listing.views_count += 1
+    db.session.commit()
+    return redirect(f"{FRONTEND_URL}/listing_detail.html?id={listing_id}")
+
+@app.route('/auth')
+def auth_page():
+    return redirect(f"{FRONTEND_URL}/auth.html")
+
+@app.route('/dashboard')
+def dashboard():
+    return redirect(f"{FRONTEND_URL}/dashboard.html")
+
+@app.route('/admin')
+def admin_page():
+    return redirect(f"{FRONTEND_URL}/admin_login.html")
+
+@app.route('/privacy-policy')
+def privacy_policy():
+    return redirect(f"{FRONTEND_URL}/privacy_policy.html")
+
+@app.route('/terms-of-service')
+def terms_of_service():
+    return redirect(f"{FRONTEND_URL}/terms_of_service.html")
+
+# ----------------------------------------------------
+# DECOUPLED NEW REST API ENDPOINTS
+# ----------------------------------------------------
+@app.route('/api/home-data', methods=['GET'])
+def api_home_data():
     featured = Listing.query.filter((Listing.is_premium == True) | (Listing.is_trending == True)).limit(6).all()
     popular_food = Listing.query.filter_by(category='street_food').order_by(Listing.hygiene_rating.desc()).limit(4).all()
     recommended_rooms = Listing.query.filter(Listing.category.in_(['room', 'pg', 'hostel'])).order_by(Listing.views_count.desc()).limit(4).all()
     
-    # App statistics
     stats = {
         'listings': Listing.query.count(),
         'users': User.query.filter_by(role='user').count(),
@@ -232,40 +274,83 @@ def index():
     if stats['cities'] == 0:
         stats['cities'] = 1
 
-    return render_template('index.html', featured=featured, popular_food=popular_food, recommended_rooms=recommended_rooms, stats=stats)
+    def serialize_listing(item):
+        fav_status = False
+        logged_u = get_logged_user()
+        if logged_u:
+            fav_status = Favorite.query.filter_by(user_id=logged_u.id, listing_id=item.id).first() is not None
 
-@app.route('/listings')
-def listings():
-    return render_template('listings.html')
+        return {
+            'id': item.id,
+            'title': item.title,
+            'description': item.description,
+            'category': item.category,
+            'price': item.price,
+            'address': item.address,
+            'city': item.city,
+            'latitude': item.latitude,
+            'longitude': item.longitude,
+            'images': item.images.split(',') if item.images else [],
+            'amenities': item.amenities.split(',') if item.amenities else [],
+            'gender_preference': item.gender_preference,
+            'food_included': item.food_included,
+            'furnished_status': item.furnished_status,
+            'hygiene_rating': item.hygiene_rating,
+            'vendor_verified': item.vendor_verified,
+            'is_trending': item.is_trending,
+            'is_premium': item.is_premium,
+            'is_favorited': fav_status,
+            'views_count': item.views_count
+        }
 
-@app.route('/listings/<int:listing_id>')
-def listing_detail(listing_id):
-    listing = Listing.query.get_or_404(listing_id)
-    # Increment views count
-    listing.views_count += 1
-    db.session.commit()
-    
-    # Check if this listing is favorited by the logged in user
-    is_fav = False
+    return jsonify({
+        'status': 'success',
+        'stats': stats,
+        'featured': [serialize_listing(x) for x in featured],
+        'popular_food': [serialize_listing(x) for x in popular_food],
+        'recommended_rooms': [serialize_listing(x) for x in recommended_rooms]
+    })
+
+@app.route('/api/auth/session', methods=['GET'])
+def api_session():
     user = get_logged_user()
     if user:
-        is_fav = Favorite.query.filter_by(user_id=user.id, listing_id=listing.id).first() is not None
+        # Get notifications for the logged in user
+        notifs = Notification.query.filter_by(user_id=user.id).order_by(Notification.created_at.desc()).limit(5).all()
+        unread_count = Notification.query.filter_by(user_id=user.id, is_read=False).count()
+        
+        serialized_notifs = [{
+            'id': n.id,
+            'title': n.title,
+            'message': n.message,
+            'is_read': n.is_read,
+            'created_at': n.created_at.isoformat()
+        } for n in notifs]
+        
+        return jsonify({
+            'status': 'success',
+            'logged_in': True,
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'role': user.role,
+                'reward_points': user.reward_points,
+                'referral_code': user.referral_code
+            },
+            'notifications': serialized_notifs,
+            'unread_notifications_count': unread_count
+        })
+    return jsonify({
+        'status': 'success',
+        'logged_in': False
+    })
 
-    similar_listings = Listing.query.filter(Listing.category == listing.category, Listing.id != listing.id).limit(3).all()
-    return render_template('listing_detail.html', listing=listing, similar=similar_listings, is_favorited=is_fav)
-
-@app.route('/auth')
-def auth_page():
-    if 'user_id' in session:
-        return redirect(url_for('index'))
-    return render_template('auth.html')
-
-@app.route('/dashboard')
-def dashboard():
+@app.route('/api/lister/listings', methods=['GET'])
+def api_lister_listings():
     user = get_logged_user()
     if not user or user.role != 'lister':
-        flash('Lister login required.', 'danger')
-        return redirect(url_for('auth_page'))
+        return jsonify({'status': 'error', 'message': 'Unauthorized Lister session.'}), 403
     
     my_listings = Listing.query.filter_by(lister_id=user.id).all()
     
@@ -277,13 +362,46 @@ def dashboard():
     listing_ids = [l.id for l in my_listings]
     inquiries = Inquiry.query.filter(Inquiry.listing_id.in_(listing_ids)).order_by(Inquiry.created_at.desc()).all() if listing_ids else []
     
-    return render_template('dashboard.html', listings=my_listings, total_views=total_views, total_inquiries=total_inquiries, inquiries=inquiries)
+    def serialize_listing(item):
+        return {
+            'id': item.id,
+            'title': item.title,
+            'views_count': item.views_count,
+            'inquiries_count': item.inquiries_count,
+            'category': item.category,
+            'price': item.price,
+            'images': item.images.split(',') if item.images else []
+        }
+        
+    def serialize_inquiry(inq):
+        return {
+            'id': inq.id,
+            'name': inq.name,
+            'email': inq.email,
+            'phone': inq.phone,
+            'message': inq.message,
+            'type': inq.type,
+            'status': inq.status,
+            'schedule_date': inq.schedule_date.strftime('%Y-%m-%d %H:%M') if inq.schedule_date else None
+        }
+        
+    return jsonify({
+        'status': 'success',
+        'listings': [serialize_listing(x) for x in my_listings],
+        'inquiries': [serialize_inquiry(x) for x in inquiries],
+        'total_views': total_views,
+        'total_inquiries': total_inquiries
+    })
 
-@app.route('/admin')
-def admin_page():
+@app.route('/api/admin/dashboard', methods=['GET'])
+def api_admin_dashboard():
     if session.get('admin_authenticated') != True:
-        return render_template('admin_login.html')
-    
+        # Check fallback stateless API authentication
+        uid = request.args.get('user_id')
+        user = User.query.get(uid) if uid else None
+        if not user or user.role != 'admin':
+            return jsonify({'status': 'error', 'message': 'Unauthorized admin session.'}), 403
+
     # Statistics
     stats = {
         'users': User.query.filter_by(role='user').count(),
@@ -296,15 +414,49 @@ def admin_page():
     listings = Listing.query.all()
     reports = Report.query.order_by(Report.created_at.desc()).all()
     
-    return render_template('admin_dashboard.html', stats=stats, users=users, listings=listings, reports=reports)
+    def serialize_user(u):
+        return {
+            'id': u.id,
+            'username': u.username,
+            'email': u.email,
+            'role': u.role,
+            'is_verified': u.is_verified,
+            'reward_points': u.reward_points,
+            'created_at': u.created_at.strftime('%Y-%m-%d')
+        }
+        
+    def serialize_listing(item):
+        return {
+            'id': item.id,
+            'lister_id': item.lister_id,
+            'title': item.title,
+            'category': item.category,
+            'address': item.address,
+            'city': item.city,
+            'price': item.price,
+            'vendor_verified': item.vendor_verified
+        }
+        
+    def serialize_report(rep):
+        return {
+            'id': rep.id,
+            'listing_id': rep.listing_id,
+            'listing_title': rep.listing.title if rep.listing else 'Deleted Listing',
+            'reason': rep.reason,
+            'user_username': rep.user.username,
+            'user_email': rep.user.email,
+            'created_at': rep.created_at.strftime('%Y-%m-%d'),
+            'status': rep.status
+        }
+        
+    return jsonify({
+        'status': 'success',
+        'stats': stats,
+        'users': [serialize_user(x) for x in users],
+        'listings': [serialize_listing(x) for x in listings],
+        'reports': [serialize_report(x) for x in reports]
+    })
 
-@app.route('/privacy-policy')
-def privacy_policy():
-    return render_template('privacy_policy.html')
-
-@app.route('/terms-of-service')
-def terms_of_service():
-    return render_template('terms_of_service.html')
 
 # ----------------------------------------------------
 # REST API FOR AUTHENTICATION
