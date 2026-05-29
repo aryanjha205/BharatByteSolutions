@@ -1417,6 +1417,34 @@ document.addEventListener('DOMContentLoaded', () => {
         chatInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') submitAIChat();
         });
+
+        // Floating Widget Toggle Logic
+        const floatingTrigger = document.getElementById('ai-floating-trigger');
+        const floatingWidget = document.getElementById('ai-floating-widget');
+        const widgetClose = document.getElementById('ai-widget-close');
+        
+        if (floatingTrigger && floatingWidget) {
+            floatingTrigger.addEventListener('click', () => {
+                floatingWidget.classList.toggle('show-chat');
+            });
+            
+            if (widgetClose) {
+                widgetClose.addEventListener('click', () => {
+                    floatingWidget.classList.remove('show-chat');
+                });
+            }
+            
+            // Interactive Suggestions Tags
+            document.querySelectorAll('.suggestion-tag').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    const query = tag.getAttribute('data-query');
+                    if (query) {
+                        chatInput.value = query;
+                        submitAIChat();
+                    }
+                });
+            });
+        }
     }
 
     async function submitAIChat() {
