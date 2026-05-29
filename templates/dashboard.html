@@ -1,0 +1,410 @@
+{% extends 'base.html' %}
+
+{% block title %}Lister Studio | Bharat Byte{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        
+        <!-- Header studio section -->
+        <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-3">
+            <div>
+                <h1 class="fw-bold text-dark mb-1">Lister Studio 🎨</h1>
+                <p class="text-muted mb-0">Create listings, analyze views, and manage incoming consumer inquiries.</p>
+            </div>
+            
+            <!-- Referral Rewards Banner -->
+            <div class="card p-3 border-primary bg-primary-light d-flex flex-row align-items-center gap-3" style="border-radius: 12px; border-style: dashed !important;">
+                <div class="fs-2 text-primary"><i class="bx bx-gift"></i></div>
+                <div>
+                    <div class="small fw-semibold text-primary">Your Referral Code: <span class="badge bg-primary text-white">{{ current_user.referral_code }}</span></div>
+                    <div class="small text-muted">Reward Points: <strong>{{ current_user.reward_points }} pts</strong> (₹{{ current_user.reward_points }} value)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Metrics Grid -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-icon"><i class="bx bx-list-ul"></i></div>
+                    <div>
+                        <h3 class="fw-bold mb-0 text-dark">{{ listings | length }}</h3>
+                        <span class="text-muted small">My Listings</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-icon"><i class="bx bx-show"></i></div>
+                    <div>
+                        <h3 class="fw-bold mb-0 text-dark">{{ total_views }}</h3>
+                        <span class="text-muted small">Total Views</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-icon"><i class="bx bx-message-square-detail"></i></div>
+                    <div>
+                        <h3 class="fw-bold mb-0 text-dark">{{ total_inquiries }}</h3>
+                        <span class="text-muted small">Inquiries Received</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-icon"><i class="bx bx-trending-up"></i></div>
+                    <div>
+                        <h3 class="fw-bold mb-0 text-dark">
+                            {% if total_views > 0 %}
+                                {{ ((total_inquiries / total_views) * 100) | round(1) }}%
+                            {% else %}
+                                0.0%
+                            {% endif %}
+                        </h3>
+                        <span class="text-muted small">Conversion Rate</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs navigation -->
+        <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 16px; background-color: var(--bg-card); color: var(--text-main);">
+            <div class="card-header bg-light border-0 p-0" style="background: var(--bg-main) !important;">
+                <ul class="nav nav-tabs border-0" id="listerTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link border-0 active py-3 px-4 fw-semibold" id="my-listings-tab" data-bs-toggle="tab" data-bs-target="#my-listings-pane" type="button" role="tab"><i class="bx bx-list-ul"></i> Active Listings</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link border-0 py-3 px-4 fw-semibold" id="create-listing-tab" data-bs-toggle="tab" data-bs-target="#create-listing-pane" type="button" role="tab"><i class="bx bx-plus-circle"></i> Add New Service</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link border-0 py-3 px-4 fw-semibold" id="inquiries-tab" data-bs-toggle="tab" data-bs-target="#inquiries-pane" type="button" role="tab"><i class="bx bx-chat"></i> Leads & inquiries</button>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="card-body p-4">
+                <div class="tab-content" id="listerTabContent">
+                    
+                    <!-- Pane 1: Active Listings Grid -->
+                    <div class="tab-pane fade show active" id="my-listings-pane" role="tabpanel">
+                        <div class="row">
+                            {% if listings %}
+                                {% for item in listings %}
+                                <div class="col-md-6 mb-4" id="list-card-{{ item.id }}">
+                                    <div class="d-flex bg-light p-3 border rounded shadow-sm gap-3 align-items-center" style="background: var(--bg-main) !important; border: 1px solid var(--border-color) !important;">
+                                        <img src="{{ item.images.split(',')[0] if item.images else 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80' }}" class="rounded" style="width: 100px; height: 100px; object-fit: cover;" alt="Listing Thumbnail">
+                                        <div class="flex-grow-1 text-truncate">
+                                            <h6 class="fw-bold mb-1"><a href="{{ url_for('listing_detail', listing_id=item.id) }}" class="text-decoration-none text-dark">{{ item.title }}</a></h6>
+                                            <div class="small text-muted mb-2"><i class="bx bx-show"></i> {{ item.views_count }} Views | <i class="bx bx-chat"></i> {{ item.inquiries_count }} Leads</div>
+                                            <div class="d-flex gap-2">
+                                                <button onclick="promoteListing('{{ item.id }}')" class="btn btn-xs btn-warning py-1 px-2 fw-semibold text-white border-0" style="font-size: 0.75rem;"><i class="bx bxs-hot"></i> Boost Premium</button>
+                                                <button onclick="deleteListing('{{ item.id }}')" class="btn btn-xs btn-danger py-1 px-2 fw-semibold border-0" style="font-size: 0.75rem;"><i class="bx bx-trash"></i> Delete</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                            <div class="text-center py-5 text-muted col-12">
+                                <i class="bx bx-info-circle text-muted fs-1 mb-2"></i>
+                                <h5>No active listings. Click 'Add New Service' tab to build one!</h5>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Pane 2: Add Listing Form -->
+                    <div class="tab-pane fade" id="create-listing-pane" role="tabpanel">
+                        <form id="listing-creation-form" class="row g-3">
+                            <div class="col-md-6">
+                                <label class="small fw-semibold mb-1">Listing Title</label>
+                                <input type="text" id="list-title" class="form-control form-control-custom" placeholder="e.g. Annapurna Masala Dosa Corner" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="small fw-semibold mb-1">Service Category</label>
+                                <select id="list-category" class="form-select form-control-custom" required>
+                                    <option value="street_food">Street Food Stall</option>
+                                    <option value="pg">Paying Guest (PG)</option>
+                                    <option value="hostel">Hostel Accommodation</option>
+                                    <option value="room">Room Rental / Flat</option>
+                                    <option value="tiffin">Tiffin Delivery Service</option>
+                                    <option value="laundry">Laundry Cleaning</option>
+                                    <option value="medical">Medical Store Pharmacy</option>
+                                    <option value="atm">ATM Service</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label class="small fw-semibold mb-1">Price / Rent (₹ per month or plate)</label>
+                                <input type="number" id="list-price" class="form-control form-control-custom" placeholder="e.g. 5000" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="small fw-semibold mb-1">Latitude coordinate (GPS map location)</label>
+                                <input type="number" id="list-lat" class="form-control form-control-custom" value="23.2156" step="any" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="small fw-semibold mb-1">Longitude coordinate (GPS map location)</label>
+                                <input type="number" id="list-lng" class="form-control form-control-custom" value="72.6369" step="any" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="small fw-semibold mb-1">Street Address</label>
+                                <input type="text" id="list-address" class="form-control form-control-custom" placeholder="e.g. Sector 15 Shopping Arcade" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="small fw-semibold mb-1">City</label>
+                                <input type="text" id="list-city" class="form-control form-control-custom" placeholder="e.g. Gandhinagar" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="small fw-semibold mb-1">Image URLs (comma separated for carousel)</label>
+                                <input type="text" id="list-images" class="form-control form-control-custom" placeholder="e.g. https://domain.com/img1.jpg,https://domain.com/img2.jpg">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="small fw-semibold mb-1">Video URLs (optional, comma separated)</label>
+                                <input type="text" id="list-videos" class="form-control form-control-custom" placeholder="e.g. https://domain.com/video.mp4">
+                            </div>
+
+                            <!-- Accomm details toggle options -->
+                            <div class="col-12 p-3 bg-light rounded" style="background: var(--bg-main) !important; border: 1px solid var(--border-color);">
+                                <h6 class="fw-bold mb-3">Accommodation Filters (Applies to PG, Room, Hostels)</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="small fw-semibold text-muted mb-1">Gender Preference</label>
+                                        <select id="list-gender" class="form-select form-control-custom">
+                                            <option value="all">Unisex / All welcome</option>
+                                            <option value="male">Boys Only</option>
+                                            <option value="female">Girls Only</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="small fw-semibold text-muted mb-1">Furnishing Status</label>
+                                        <select id="list-furnished" class="form-select form-control-custom">
+                                            <option value="unfurnished">Unfurnished</option>
+                                            <option value="semi-furnished">Semi-Furnished</option>
+                                            <option value="furnished">Fully Furnished</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 pt-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="list-food">
+                                            <label class="form-check-label small" for="list-food">Daily Food Included in Rent</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3 row-cols-2 row-cols-md-4 g-2">
+                                    <div class="col">
+                                        <div class="form-check">
+                                            <input class="form-check-input list-amenities-check" type="checkbox" value="wifi" id="chk-wifi">
+                                            <label class="form-check-label small" for="chk-wifi">WiFi</label>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-check">
+                                            <input class="form-check-input list-amenities-check" type="checkbox" value="ac" id="chk-ac">
+                                            <label class="form-check-label small" for="chk-ac">AC</label>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-check">
+                                            <input class="form-check-input list-amenities-check" type="checkbox" value="parking" id="chk-parking">
+                                            <label class="form-check-label small" for="chk-parking">Parking</label>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-check">
+                                            <input class="form-check-input list-amenities-check" type="checkbox" value="laundry" id="chk-laundry">
+                                            <label class="form-check-label small" for="chk-laundry">Laundry</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="small fw-semibold">Listing Description</label>
+                                    <button type="button" id="ai-desc-generate-btn" class="btn btn-xs btn-outline-primary py-1 px-2 fw-semibold" style="font-size: 0.75rem;">
+                                        Generate AI Description ✨
+                                    </button>
+                                </div>
+                                <textarea id="list-description" class="form-control form-control-custom" rows="5" placeholder="Highlight details about cleanliness, menus, key rules, security..." required></textarea>
+                            </div>
+                            
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-primary px-4 py-2 fw-bold">Publish Listing <i class="bx bx-check"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Pane 3: Inquiries Logs & Visit Schedule Dates -->
+                    <div class="tab-pane fade" id="inquiries-pane" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table align-middle" style="background: var(--bg-card); color: var(--text-main);">
+                                <thead class="table-light" style="background: var(--bg-main) !important; color: var(--text-main);">
+                                    <tr>
+                                        <th>Lead Visitor</th>
+                                        <th>Contact Details</th>
+                                        <th>Message / Request</th>
+                                        <th>Inquiry Type</th>
+                                        <th>Schedule Visit Date</th>
+                                        <th>Action Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if inquiries %}
+                                        {% for inq in inquiries %}
+                                        <tr id="inq-row-{{ inq.id }}">
+                                            <td>
+                                                <div class="fw-bold">{{ inq.name }}</div>
+                                                <div class="text-muted small" style="font-size: 0.75rem;">ID: #{{ inq.id }}</div>
+                                            </td>
+                                            <td>
+                                                <div class="small"><i class="bx bx-envelope"></i> {{ inq.email }}</div>
+                                                <div class="small"><i class="bx bx-phone"></i> {{ inq.phone }}</div>
+                                            </td>
+                                            <td style="max-width: 200px; white-space: normal;">
+                                                <div class="small">"{{ inq.message }}"</div>
+                                            </td>
+                                            <td>
+                                                <span class="badge {% if inq.type == 'visit_schedule' %}bg-success{% elif inq.type == 'booking' %}bg-primary{% else %}bg-secondary{% endif %}">
+                                                    {{ inq.type | upper }}
+                                                </span>
+                                            </td>
+                                            <td class="small text-primary fw-semibold">
+                                                {{ inq.schedule_date.strftime('%d-%b-%Y %I:%M %p') if inq.schedule_date else 'N/A' }}
+                                            </td>
+                                            <td>
+                                                <select onchange="updateInquiryStatus('{{ inq.id }}', this.value)" class="form-select form-select-sm border-secondary w-auto">
+                                                    <option value="pending" {% if inq.status == 'pending' %}selected{% endif %}>Pending ⏳</option>
+                                                    <option value="contacted" {% if inq.status == 'contacted' %}selected{% endif %}>Contacted 📞</option>
+                                                    <option value="resolved" {% if inq.status == 'resolved' %}selected{% endif %}>Resolved ✅</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4 text-muted">No inquiries received for your listings yet.</td>
+                                    </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script>
+    // Promote listing call
+    async function promoteListing(id) {
+        try {
+            const res = await fetch(`/api/listings/${id}/promote`, { method: 'POST' });
+            const val = await res.json();
+            alert(val.message);
+            window.location.reload();
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    // Delete listing call
+    async function deleteListing(id) {
+        if (!confirm("Are you sure you want to permanently delete this listing?")) return;
+        try {
+            const res = await fetch(`/api/listings/${id}/delete`, { method: 'POST' });
+            const val = await res.json();
+            if (val.status === 'success') {
+                alert(val.message);
+                document.getElementById(`list-card-${id}`).remove();
+            } else {
+                alert(val.message);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    // Update Inquiry status call
+    async function updateInquiryStatus(id, newStatus) {
+        try {
+            const res = await fetch(`/api/inquiries/${id}/status`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+            const val = await res.json();
+            alert(val.message);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    // Lister creation form submit call
+    document.addEventListener('DOMContentLoaded', () => {
+        const createForm = document.getElementById('listing-creation-form');
+        if (createForm) {
+            createForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const title = document.getElementById('list-title').value;
+                const category = document.getElementById('list-category').value;
+                const price = document.getElementById('list-price').value;
+                const lat = document.getElementById('list-lat').value;
+                const lng = document.getElementById('list-lng').value;
+                const address = document.getElementById('list-address').value;
+                const city = document.getElementById('list-city').value;
+                const images = document.getElementById('list-images').value;
+                const videos = document.getElementById('list-videos').value;
+                const gender = document.getElementById('list-gender').value;
+                const furnished = document.getElementById('list-furnished').value;
+                const food = document.getElementById('list-food').checked;
+                const desc = document.getElementById('list-description').value;
+
+                const amenities = Array.from(document.querySelectorAll('.list-amenities-check:checked')).map(el => el.value).join(',');
+
+                try {
+                    const res = await fetch('/api/listings/create', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            title: title,
+                            category: category,
+                            price: price,
+                            latitude: lat,
+                            longitude: lng,
+                            address: address,
+                            city: city,
+                            images: images,
+                            videos: videos,
+                            gender_preference: gender,
+                            furnished_status: furnished,
+                            food_included: food,
+                            amenities: amenities,
+                            description: desc
+                        })
+                    });
+                    const val = await res.json();
+                    
+                    if (val.status === 'success') {
+                        alert(val.message);
+                        window.location.reload();
+                    } else {
+                        alert(val.message);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Error creating listing.");
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

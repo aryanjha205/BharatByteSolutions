@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}Explore Nearby | Bharat Byte Marketplace{% endblock %}
+
+{% block content %}
+<div class="split-container">
+    
+    <!-- Left Side: Directory Listings & Advanced Filters -->
+    <div class="sidebar-listings">
+        
+        <!-- Interactive Quick Filters Header -->
+        <div class="card p-3 border-0 bg-light mb-4 shadow-sm" style="border-radius: 12px;">
+            <h5 class="fw-bold mb-3"><i class="bx bx-slider-alt text-primary"></i> Discovery Filters</h5>
+            
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="small fw-semibold text-muted mb-1">Service Category</label>
+                    <select id="filter-category" class="form-select filter-trigger">
+                        <option value="all">All Services</option>
+                        <option value="street_food">Street Food Stalls</option>
+                        <option value="pg">PG Accommodations</option>
+                        <option value="hostel">Hostels</option>
+                        <option value="room">Rooms & Flats</option>
+                        <option value="tiffin">Tiffin Deliveries</option>
+                        <option value="laundry">Laundry Services</option>
+                        <option value="medical">Pharmacies / Hospitals</option>
+                        <option value="atm">ATMs</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="small fw-semibold text-muted mb-1">Search Keywords</label>
+                    <input type="text" id="filter-search" class="form-control filter-trigger" placeholder="Title, address, keywords...">
+                </div>
+            </div>
+            
+            <div class="row mt-1 g-3">
+                <!-- Price cap -->
+                <div class="col-md-6">
+                    <label class="small fw-semibold text-muted d-flex justify-content-between mb-1">
+                        <span>Price Ceiling</span>
+                        <span class="text-primary fw-bold">₹<span id="price-val-display">20000</span></span>
+                    </label>
+                    <input type="range" id="filter-price" class="form-range" min="0" max="20000" step="50" value="20000">
+                </div>
+                
+                <!-- Distance Cap -->
+                <div class="col-md-6">
+                    <label class="small fw-semibold text-muted d-flex justify-content-between mb-1">
+                        <span>Search Radius (GPS required)</span>
+                        <span class="text-primary fw-bold" id="distance-val-display">10 km</span>
+                    </label>
+                    <input type="range" id="filter-distance" class="form-range" min="1" max="50" step="1" value="10">
+                </div>
+            </div>
+            
+            <div class="row mt-1 g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-semibold text-muted mb-1">Min Overall/Hygiene Rating</label>
+                    <select id="filter-rating" class="form-select filter-trigger">
+                        <option value="all">Any Rating</option>
+                        <option value="4.5">Excellent (4.5+ ⭐)</option>
+                        <option value="4.0">Very Good (4.0+ ⭐)</option>
+                        <option value="3.5">Good (3.5+ ⭐)</option>
+                    </select>
+                </div>
+                <div class="col-md-6 pt-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input filter-trigger" type="checkbox" id="filter-verified">
+                        <label class="form-check-label fw-bold text-success" for="filter-verified"><i class="bx bxs-shield-checked"></i> Verified Only</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accommodations Filters Section Toggle -->
+            <div class="accordion accordion-flush mt-3" id="filtersAccordion">
+                <div class="accordion-item bg-transparent">
+                    <h2 class="accordion-header" id="flush-headingOne">
+                        <button class="accordion-button collapsed py-2 px-0 bg-transparent text-primary fw-semibold small" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                            Accommodation & Food Specific Filters
+                        </button>
+                    </h2>
+                    <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#filtersAccordion">
+                        <div class="accordion-body px-0 py-3">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="small fw-semibold text-muted mb-1">Gender Preference</label>
+                                    <select id="filter-gender" class="form-select filter-trigger">
+                                        <option value="all">All (Boys / Girls)</option>
+                                        <option value="male">Boys Only</option>
+                                        <option value="female">Girls Only</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="small fw-semibold text-muted mb-1">Furnishing Status</label>
+                                    <select id="filter-furnished" class="form-select filter-trigger">
+                                        <option value="all">Any Status</option>
+                                        <option value="furnished">Furnished</option>
+                                        <option value="semi-furnished">Semi-Furnished</option>
+                                        <option value="unfurnished">Unfurnished</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row row-cols-2 g-2">
+                                <div class="col">
+                                    <div class="form-check">
+                                        <input class="form-check-input filter-trigger" type="checkbox" id="filter-ac">
+                                        <label class="form-check-label small" for="filter-ac">AC Rooms</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-check">
+                                        <input class="form-check-input filter-trigger" type="checkbox" id="filter-wifi">
+                                        <label class="form-check-label small" for="filter-wifi">WiFi Internet</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-check">
+                                        <input class="form-check-input filter-trigger" type="checkbox" id="filter-parking">
+                                        <label class="form-check-label small" for="filter-parking">Vehicle Parking</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-check">
+                                        <input class="form-check-input filter-trigger" type="checkbox" id="filter-food">
+                                        <label class="form-check-label small" for="filter-food">Food Included</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Listings Output Grid -->
+        <div class="row" id="listings-search-grid">
+            <!-- Simulated Loading / Results rendered in static/js/main.js dynamically -->
+        </div>
+
+    </div>
+
+    <!-- Right Side: Interactive Maps Pane -->
+    <div class="map-view-panel">
+        <div id="leaflet-map"></div>
+        
+        <!-- Floating GPS indicator coordinates inside map -->
+        <input type="hidden" id="user-lat">
+        <input type="hidden" id="user-lng">
+    </div>
+
+</div>
+{% endblock %}

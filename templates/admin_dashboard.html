@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Command Center | Bharat Byte{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        
+        <!-- Header Console Banner -->
+        <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-3">
+            <div>
+                <h1 class="fw-bold text-dark mb-1">Admin Dashboard 🛡️</h1>
+                <p class="text-muted mb-0">Platform control tower: Audit reports, verify vendor badges, and manage registered roles.</p>
+            </div>
+            
+            <button onclick="logoutAdmin()" class="btn btn-outline-danger fw-bold"><i class="bx bx-log-out"></i> Terminate Session</button>
+        </div>
+
+        <!-- Metrics Cards grid -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-3">
+                <div class="stats-card border-danger">
+                    <div class="stats-icon text-danger bg-danger bg-opacity-10"><i class="bx bx-flag"></i></div>
+                    <div>
+                        <h3 class="fw-bold mb-0 text-dark">{{ stats.reports }}</h3>
+                        <span class="text-muted small">Pending Reports</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-icon"><i class="bx bx-user"></i></div>
+                    <div>
+                        <h3 class="fw-bold mb-0 text-dark">{{ stats.users }}</h3>
+                        <span class="text-muted small">Consumer Users</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-icon"><i class="bx bx-store-alt"></i></div>
+                    <div>
+                        <h3 class="fw-bold mb-0 text-dark">{{ stats.listers }}</h3>
+                        <span class="text-muted small">Verified Listers</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-icon"><i class="bx bx-list-ol"></i></div>
+                    <div>
+                        <h3 class="fw-bold mb-0 text-dark">{{ stats.listings }}</h3>
+                        <span class="text-muted small">Active Services</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Central Panel Tabs -->
+        <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 16px; background-color: var(--bg-card); color: var(--text-main);">
+            <div class="card-header bg-light border-0 p-0" style="background: var(--bg-main) !important;">
+                <ul class="nav nav-tabs border-0" id="adminTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link border-0 active py-3 px-4 fw-semibold text-danger" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports-pane" type="button" role="tab"><i class="bx bx-flag"></i> Fake Listing Reports</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link border-0 py-3 px-4 fw-semibold" id="listings-mgt-tab" data-bs-toggle="tab" data-bs-target="#listings-mgt-pane" type="button" role="tab"><i class="bx bx-list-ul"></i> Audit Listings</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link border-0 py-3 px-4 fw-semibold" id="users-mgt-tab" data-bs-toggle="tab" data-bs-target="#users-mgt-pane" type="button" role="tab"><i class="bx bx-user-voice"></i> Manage Users</button>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="card-body p-4">
+                <div class="tab-content" id="adminTabContent">
+                    
+                    <!-- Tab 1: Fake Listing Reports List -->
+                    <div class="tab-pane fade show active" id="reports-pane" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table align-middle" style="background: var(--bg-card); color: var(--text-main);">
+                                <thead class="table-light text-muted small" style="background: var(--bg-main) !important; color: var(--text-main);">
+                                    <tr>
+                                        <th>Target Listing</th>
+                                        <th>Flagged Reason</th>
+                                        <th>Reporter</th>
+                                        <th>Filing Date</th>
+                                        <th>Current Status</th>
+                                        <th>Resolution Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if reports %}
+                                        {% for rep in reports %}
+                                        <tr id="report-row-{{ rep.id }}" class="{% if rep.status == 'pending' %}table-warning-subtle{% endif %}">
+                                            <td>
+                                                <div class="fw-bold">{{ rep.listing.title if rep.listing else 'Deleted Listing' }}</div>
+                                                <div class="text-muted small" style="font-size: 0.75rem;">Listing ID: #{{ rep.listing_id }}</div>
+                                            </td>
+                                            <td style="max-width: 250px; white-space: normal;">
+                                                <div class="small fw-semibold text-danger">"{{ rep.reason }}"</div>
+                                            </td>
+                                            <td>
+                                                <div class="small fw-bold">{{ rep.user.username }}</div>
+                                                <div class="text-muted small" style="font-size: 0.75rem;">{{ rep.user.email }}</div>
+                                            </td>
+                                            <td class="small">{{ rep.created_at.strftime('%d-%b-%Y') }}</td>
+                                            <td>
+                                                <span class="badge {% if rep.status == 'resolved' %}bg-success{% else %}bg-danger{% endif %}">
+                                                    {{ rep.status | upper }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if rep.status == 'pending' %}
+                                                <div class="d-flex gap-2">
+                                                    <button onclick="resolveReport({{ rep.id }}, 'delete_listing')" class="btn btn-xs btn-danger py-1 px-2 fw-semibold border-0" style="font-size: 0.75rem;"><i class="bx bx-trash"></i> Ban Listing</button>
+                                                    <button onclick="resolveReport({{ rep.id }}, 'dismiss')" class="btn btn-xs btn-secondary py-1 px-2 fw-semibold border-0" style="font-size: 0.75rem;"><i class="bx bx-check"></i> Dismiss</button>
+                                                </div>
+                                                {% else %}
+                                                <span class="text-muted small">Resolved</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4 text-muted">No listing flags reported yet. Excellent!</td>
+                                    </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab 2: Audit Listings -->
+                    <div class="tab-pane fade" id="listings-mgt-pane" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table align-middle" style="background: var(--bg-card); color: var(--text-main);">
+                                <thead class="table-light text-muted small" style="background: var(--bg-main) !important; color: var(--text-main);">
+                                    <tr>
+                                        <th>Listing Title</th>
+                                        <th>Category</th>
+                                        <th>Address & Location</th>
+                                        <th>Price (₹)</th>
+                                        <th>Verification Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if listings %}
+                                        {% for item in listings %}
+                                        <tr id="listing-audit-row-{{ item.id }}">
+                                            <td>
+                                                <div class="fw-bold">{{ item.title }}</div>
+                                                <div class="text-muted small" style="font-size: 0.75rem;">Lister ID: #{{ item.lister_id }}</div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-secondary text-uppercase">{{ item.category }}</span>
+                                            </td>
+                                            <td class="small">{{ item.address }}, {{ item.city }}</td>
+                                            <td class="fw-bold text-primary">₹{{ item.price | int }}</td>
+                                            <td>
+                                                <div class="form-check form-switch">
+                                                    <input onchange="toggleVerifyBadge({{ item.id }})" class="form-check-input" type="checkbox" id="verifyBadge-{{ item.id }}" {% if item.vendor_verified %}checked{% endif %}>
+                                                    <label class="form-check-label small fw-bold text-success" for="verifyBadge-{{ item.id }}">Verified Badge</label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <button onclick="adminDeleteListing({{ item.id }})" class="btn btn-xs btn-outline-danger py-1 px-2 border-0" style="font-size: 0.75rem;"><i class="bx bx-trash"></i> Delete</button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4 text-muted">No active listings stored in database.</td>
+                                    </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab 3: User Accounts List -->
+                    <div class="tab-pane fade" id="users-mgt-pane" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table align-middle" style="background: var(--bg-card); color: var(--text-main);">
+                                <thead class="table-light text-muted small" style="background: var(--bg-main) !important; color: var(--text-main);">
+                                    <tr>
+                                        <th>Account User</th>
+                                        <th>Email Address</th>
+                                        <th>Account Role</th>
+                                        <th>Verified Email</th>
+                                        <th>Referral Points</th>
+                                        <th>Joined On</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if users %}
+                                        {% for u in users %}
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold">{{ u.username }}</div>
+                                                <div class="text-muted small" style="font-size: 0.75rem;">User ID: #{{ u.id }}</div>
+                                            </td>
+                                            <td>{{ u.email }}</td>
+                                            <td>
+                                                <span class="badge {% if u.role == 'admin' %}bg-danger{% elif u.role == 'lister' %}bg-primary{% else %}bg-secondary{% endif %}">
+                                                    {{ u.role | upper }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if u.is_verified %}
+                                                <span class="text-success fw-bold"><i class="bx bx-check-circle"></i> Yes</span>
+                                                {% else %}
+                                                <span class="text-danger fw-bold"><i class="bx bx-x-circle"></i> No</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="fw-semibold text-primary">{{ u.reward_points }} pts</td>
+                                            <td class="small">{{ u.created_at.strftime('%d-%b-%Y') }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script>
+    // Terminate Admin Auth Session call
+    async function logoutAdmin() {
+        try {
+            await fetch('/api/admin/logout', { method: 'POST' });
+            window.location.href = '/admin';
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    // Toggle verified badge status call
+    async function toggleVerifyBadge(id) {
+        try {
+            const res = await fetch(`/api/admin/verify-listing/${id}`, { method: 'POST' });
+            const val = await res.json();
+            alert(val.message);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    // Delete listing from administrator console
+    async function adminDeleteListing(id) {
+        if (!confirm("Are you sure you want to permanently force-delete this listing?")) return;
+        try {
+            const res = await fetch(`/api/listings/${id}/delete`, { method: 'POST' });
+            const val = await res.json();
+            if (val.status === 'success') {
+                alert(val.message);
+                document.getElementById(`listing-audit-row-${id}`).remove();
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    // Resolve Flag report call
+    async function resolveReport(reportId, actionType) {
+        try {
+            const res = await fetch(`/api/admin/reports/${reportId}/resolve`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: actionType })
+            });
+            const val = await res.json();
+            if (val.status === 'success') {
+                alert(val.message);
+                const row = document.getElementById(`report-row-${reportId}`);
+                if (row) {
+                    row.querySelector('span.badge').className = "badge bg-success";
+                    row.querySelector('span.badge').textContent = "RESOLVED";
+                    row.querySelector('div.d-flex').innerHTML = "<span class='text-muted small'>Resolved</span>";
+                }
+            } else {
+                alert(val.message);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+</script>
+{% endblock %}
