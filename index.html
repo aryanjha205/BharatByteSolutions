@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Bharat Byte - India's premier all-in-one local discovery and accommodation marketplace. Find street food, PGs, hostels, flats, and services.">
+    <title>Bharat Byte | Local Discovery & Stays Marketplace</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Boxicons -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="static/css/style.css">
+    
+    <style>
+        .marketing-hero {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(236, 72, 153, 0.05) 100%);
+            padding: 120px 0 100px 0;
+            text-align: center;
+        }
+        .app-preview-card {
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,0,0,0.05);
+            overflow: hidden;
+            background: white;
+            max-width: 800px;
+            margin: 40px auto 0;
+        }
+        .feature-box {
+            background: white;
+            border: 1px solid #f1f5f9;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            height: 100%;
+            transition: transform 0.3s ease;
+        }
+        .feature-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #4f46e5;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <header class="sticky-top bg-white border-bottom py-2 shadow-sm">
+        <nav class="navbar navbar-expand-lg container">
+            <a class="navbar-brand d-flex align-items-center text-decoration-none" href="index.html">
+                <img src="static/logo.png" alt="Bharat Byte Logo" style="height: 40px; margin-right: 10px;">
+                <span class="fw-bold fs-4 text-primary">Bharat Byte</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarStaticContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarStaticContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                    <li class="nav-item"><a class="nav-link active fw-semibold" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-muted" href="privacy_policy.html">Privacy Policy</a></li>
+                    <li class="nav-item"><a class="nav-link text-muted" href="terms_of_service.html">Terms of Service</a></li>
+                </ul>
+                <a href="https://bharatbytesolutions.vercel.app" target="_blank" class="btn btn-primary px-4 py-2 fw-bold rounded-pill">
+                    LAUNCH DYNAMIC APP <i class="bx bx-rocket"></i>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Marketing Hero -->
+    <section class="marketing-hero">
+        <div class="container text-center">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 fs-6 fw-bold rounded-pill mb-3">NOW LIVE ACROSS INDIA 🇮🇳</span>
+            <h1 class="display-3 fw-extrabold text-dark mb-3" style="font-family: 'Space Grotesk', sans-serif;">
+                Discover Local Services &<br>
+                <span class="text-primary">Premium Accommodations</span>
+            </h1>
+            <p class="lead text-muted mx-auto mb-5" style="max-width: 650px;">
+                Explore top street food stalls, student PGs, boys/girls hostels, medical stores, tiffin deliveries, and ATMs near you with verified GPS mapping and simulated AI assistants.
+            </p>
+            
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+                <a href="https://bharatbytesolutions.vercel.app" target="_blank" class="btn btn-primary btn-lg px-5 py-3 fw-bold rounded-pill shadow-lg">
+                    LAUNCH WEB APP <i class="bx bx-rocket"></i>
+                </a>
+                <a href="#features" class="btn btn-outline-secondary btn-lg px-5 py-3 fw-bold rounded-pill">
+                    Explore Features <i class="bx bx-down-arrow-alt"></i>
+                </a>
+            </div>
+            
+            <!-- App mockup preview card -->
+            <div class="app-preview-card">
+                <img src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=1200&q=80" alt="App Mockup" class="img-fluid">
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Features Matrix -->
+    <section id="features" class="py-5 bg-light border-top">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold fs-1 text-dark" style="font-family: 'Space Grotesk', sans-serif;">What is Bharat Byte?</h2>
+                <p class="text-muted">An all-in-one localized service directory connecting listers and buyers.</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-box">
+                        <i class="bx bx-restaurant feature-icon text-warning"></i>
+                        <h4 class="fw-bold mb-2">Street Food Discovery</h4>
+                        <p class="text-muted small">View hygiene ratings, menus, images, and locations for verified street food corner stalls.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-box">
+                        <i class="bx bx-bed feature-icon text-danger"></i>
+                        <h4 class="fw-bold mb-2">Stays & PGs Finder</h4>
+                        <p class="text-muted small">Filter co-living stays, boys/girls hostels, and flats by AC, Wifi, furnished status, and food inclusion.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-box">
+                        <i class="bx bx-bot feature-icon"></i>
+                        <h4 class="fw-bold mb-2">AI Search Assistant</h4>
+                        <p class="text-muted small">Tell the conversational assistant what you need (e.g. "girls PG under 8k") and let it filter the map instantly.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to action -->
+    <section class="py-5 text-center bg-primary text-white border-top">
+        <div class="container py-4">
+            <h2 class="fw-bold display-5 mb-3" style="font-family: 'Space Grotesk', sans-serif;">Ready to Discover?</h2>
+            <p class="lead text-white-50 mx-auto mb-4" style="max-width: 500px;">
+                Log in as a regular consumer to explore stalls, or register as a Lister to publish your own listings!
+            </p>
+            <a href="https://bharatbytesolutions.vercel.app" target="_blank" class="btn btn-light btn-lg text-primary px-5 py-3 fw-bold rounded-pill shadow">
+                Launch Dynamic App Now <i class="bx bx-right-arrow-alt"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white py-4 border-top">
+        <div class="container text-center text-muted small">
+            <p>&copy; 2026 Bharat Byte Marketplace. All rights reserved.</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="privacy_policy.html" class="text-reset text-decoration-none">Privacy Policy</a>
+                <a href="terms_of_service.html" class="text-reset text-decoration-none">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
