@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const API_BASE_URL = (() => {
         // If hosted on GitHub Pages, use Vercel production URL
         if (window.location.hostname && !['localhost', '127.0.0.1'].includes(window.location.hostname)) {
-            return 'https://bharatbytesolutions.vercel.app';
+            return 'https://bharat-byte-solutions.vercel.app';
         }
         // If opened locally via file:// protocol or local static server (Live Server on port 5500, etc.)
         if (window.location.protocol === 'file:' || window.location.port !== '5000') {
@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return '';
     })();
+
 
 
     // Helper to get authenticated URL query parameters
