@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadUserSession();
 
     // =========================================
-    // 5. GPS GEOLOCATION & MAP INTEGRATION
+    // 5. GPS GEOLOCATION & MAP INTEGRATION (AUTOMATED)
     // =========================================
     let userLat = null;
     let userLng = null;
@@ -238,44 +238,56 @@ document.addEventListener('DOMContentLoaded', () => {
     let markersLayer = null;
     let listingsData = [];
 
-    const gpsBtn = document.getElementById('gps-btn');
     const latInput = document.getElementById('user-lat');
     const lngInput = document.getElementById('user-lng');
-    const locationDisplay = document.getElementById('gps-status-text');
 
-    if (gpsBtn) {
-        gpsBtn.addEventListener('click', () => {
-            if (locationDisplay) locationDisplay.textContent = "Locating...";
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        userLat = position.coords.latitude;
-                        userLng = position.coords.longitude;
-                        if (latInput) latInput.value = userLat;
-                        if (lngInput) lngInput.value = userLng;
-                        if (locationDisplay) locationDisplay.textContent = `Location Verified: ${userLat.toFixed(4)}, ${userLng.toFixed(4)}`;
-                        
-                        if (map) {
-                            map.setView([userLat, userLng], 14);
-                            L.circle([userLat, userLng], {
-                                color: 'red',
-                                fillColor: '#f03',
-                                fillOpacity: 0.3,
-                                radius: 500
-                            }).addTo(map).bindPopup("Your Geolocation").openPopup();
-                        }
-                        loadListings();
-                    },
-                    (error) => {
-                        console.error(error);
-                        if (locationDisplay) locationDisplay.textContent = "Permission denied or unavailable.";
+    function autoFetchLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    userLat = position.coords.latitude;
+                    userLng = position.coords.longitude;
+                    if (latInput) latInput.value = userLat;
+                    if (lngInput) lngInput.value = userLng;
+                    console.log(`Automatic Geolocation acquired: ${userLat}, ${userLng}`);
+                    
+                    if (map) {
+                        map.setView([userLat, userLng], 14);
+                        L.circle([userLat, userLng], {
+                            color: 'red',
+                            fillColor: '#f03',
+                            fillOpacity: 0.3,
+                            radius: 500
+                        }).addTo(map).bindPopup("Your Geolocation").openPopup();
                     }
-                );
-            } else {
-                if (locationDisplay) locationDisplay.textContent = "GPS not supported by browser.";
-            }
-        });
+                    
+                    // Reload listings to filter by nearby items
+                    const listGrid = document.getElementById('listings-search-grid');
+                    if (listGrid) {
+                        loadListings();
+                    }
+                },
+                (error) => {
+                    console.warn("Background Geolocation declined or failed. Defaulting to Gandhinagar.", error);
+                    // Fallback to Gandhinagar Center
+                    userLat = 23.2156;
+                    userLng = 72.6369;
+                    if (latInput) latInput.value = userLat;
+                    if (lngInput) lngInput.value = userLng;
+                    
+                    const listGrid = document.getElementById('listings-search-grid');
+                    if (listGrid) {
+                        loadListings();
+                    }
+                }
+            );
+        } else {
+            console.warn("Geolocation not supported by browser.");
+        }
     }
+
+    // Trigger automatic geolocation discovery on load
+    autoFetchLocation();
 
     const mapElement = document.getElementById('leaflet-map');
     if (mapElement) {
@@ -1404,128 +1416,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     loadAdminDashboard();
-
-    // =========================================
-    // 11. AI SEARCH ASSISTANT PANEL
-    // =========================================
-    const chatInput = document.getElementById('ai-chat-input');
-    const chatBtn = document.getElementById('ai-chat-btn');
-    const chatLogs = document.getElementById('ai-chat-logs');
-
-    if (chatBtn && chatInput) {
-        chatBtn.addEventListener('click', () => submitAIChat());
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') submitAIChat();
-        });
-
-        // Floating Widget Toggle Logic
-        const floatingTrigger = document.getElementById('ai-floating-trigger');
-        const floatingWidget = document.getElementById('ai-floating-widget');
-        const widgetClose = document.getElementById('ai-widget-close');
-        
-        if (floatingTrigger && floatingWidget) {
-            floatingTrigger.addEventListener('click', () => {
-                floatingWidget.classList.toggle('show-chat');
-            });
-            
-            if (widgetClose) {
-                widgetClose.addEventListener('click', () => {
-                    floatingWidget.classList.remove('show-chat');
-                });
-            }
-            
-            // Interactive Suggestions Tags
-            document.querySelectorAll('.suggestion-tag').forEach(tag => {
-                tag.addEventListener('click', () => {
-                    const query = tag.getAttribute('data-query');
-                    if (query) {
-                        chatInput.value = query;
-                        submitAIChat();
-                    }
-                });
-            });
-        }
-    }
-
-    async function submitAIChat() {
-        const text = chatInput.value.trim();
-        if (!text) return;
-
-        appendChatMessage(text, 'sent');
-        chatInput.value = '';
-
-        const typingId = appendChatMessage("Analyzing parameters...", 'received typing');
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/ai/search-assistant`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: text })
-            });
-            const result = await response.json();
-            
-            const typingElem = document.getElementById(typingId);
-            if (typingElem) typingElem.remove();
-
-            if (result.status === 'success') {
-                appendChatMessage(result.reply, 'received');
-                
-                const parsed = result.filters;
-                
-                if (parsed.category !== 'all') {
-                    const catSelect = document.getElementById('filter-category');
-                    if (catSelect) catSelect.value = parsed.category;
-                }
-                
-                if (parsed.gender !== 'all') {
-                    const genderSelect = document.getElementById('filter-gender');
-                    if (genderSelect) genderSelect.value = parsed.gender;
-                }
-
-                if (parsed.price) {
-                    const priceSlider = document.getElementById('filter-price');
-                    if (priceSlider) {
-                        priceSlider.value = parsed.price;
-                        document.getElementById('price-val-display').textContent = parsed.price;
-                    }
-                }
-
-                if (parsed.ac) {
-                    const acCheck = document.getElementById('filter-ac');
-                    if (acCheck) acCheck.checked = true;
-                }
-                if (parsed.wifi) {
-                    const wifiCheck = document.getElementById('filter-wifi');
-                    if (wifiCheck) wifiCheck.checked = true;
-                }
-                if (parsed.parking) {
-                    const parkingCheck = document.getElementById('filter-parking');
-                    if (parkingCheck) parkingCheck.checked = true;
-                }
-
-                loadListings();
-            } else {
-                appendChatMessage("Sorry, I had trouble parsing that recommendation. Can you ask in a different way?", 'received');
-            }
-        } catch (error) {
-            console.error(error);
-            const typingElem = document.getElementById(typingId);
-            if (typingElem) typingElem.remove();
-            appendChatMessage("Connection issue with AI processor.", 'received');
-        }
-    }
-
-    function appendChatMessage(message, senderClass) {
-        if (!chatLogs) return null;
-        const msgId = 'msg-' + Math.random().toString(36).substr(2, 9);
-        const div = document.createElement('div');
-        div.id = msgId;
-        div.className = `chat-msg ${senderClass}`;
-        div.innerHTML = message;
-        chatLogs.appendChild(div);
-        chatLogs.scrollTop = chatLogs.scrollHeight;
-        return msgId;
-    }
 
     // =========================================
     // 12. DIRECT CHAT SIMULATOR
