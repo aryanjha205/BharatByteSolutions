@@ -199,6 +199,7 @@
                         
                         if (val.status === 'success') {
                             alert(val.message);
+                            localStorage.setItem('user_id', val.user_id);
                             localStorage.setItem('admin_authenticated', 'true');
                             localStorage.setItem('role', 'admin');
                             localStorage.setItem('username', 'SuperAdmin');

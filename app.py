@@ -1009,10 +1009,19 @@ def api_admin_login():
     expected_pin = os.environ.get('ADMIN_PIN', '1947')
 
     if pin == expected_pin:
+        # Resolve user_id dynamically for stateless local storage mapping
+        admin_user = User.query.filter_by(role='admin').first()
+        admin_id = admin_user.id if admin_user else 1
+
+        session['user_id'] = admin_id
         session['admin_authenticated'] = True
         session['role'] = 'admin'
         session['username'] = 'SuperAdmin'
-        return jsonify({'status': 'success', 'message': 'Admin login successful!'})
+        return jsonify({
+            'status': 'success', 
+            'message': 'Admin login successful!',
+            'user_id': admin_id
+        })
     return jsonify({'status': 'error', 'message': 'Invalid secure Admin PIN.'}), 401
 
 @app.route('/api/admin/logout', methods=['POST'])
