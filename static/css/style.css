@@ -123,38 +123,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- Loader System --- */
 #loader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: var(--loader-bg);
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.loader-content {
-    text-align: center;
-}
-.loader-logo {
-    width: 85px;
-    height: 85px;
-    animation: pulseGlow 1.8s infinite ease-in-out;
-}
-.progress-bar {
-    width: 180px;
-    height: 5px;
-    background-color: var(--border-color);
-    border-radius: 10px;
-    margin: 20px auto;
-    overflow: hidden;
-}
-.progress-fill {
-    height: 100%;
-    width: 0;
-    background: linear-gradient(90deg, var(--primary), var(--secondary));
-    animation: loadFill 3s forwards linear;
+    display: none !important;
 }
 
 @keyframes pulseGlow {
