@@ -491,9 +491,14 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         });
         listGrid.innerHTML = html;
+        bindFavoriteToggles();
+    }
 
-        // Bind Favorite Toggles
+    function bindFavoriteToggles() {
         document.querySelectorAll('.favorite-btn-toggle').forEach(btn => {
+            if (btn.dataset.boundFavorite) return;
+            btn.dataset.boundFavorite = "true";
+
             btn.addEventListener('click', async (e) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -511,9 +516,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     const val = await res.json();
                     if (val.status === 'success') {
                         if (val.action === 'added') {
-                            heart.className = 'bx bxs-heart text-danger';
+                            if (heart.classList.contains('bx-bookmark') || heart.classList.contains('bxs-bookmark')) {
+                                heart.className = 'bx bxs-bookmark text-danger';
+                            } else {
+                                heart.className = 'bx bxs-heart text-danger';
+                            }
                         } else {
-                            heart.className = 'bx bx-heart';
+                            if (heart.classList.contains('bx-bookmark') || heart.classList.contains('bxs-bookmark')) {
+                                heart.className = 'bx bx-bookmark';
+                            } else {
+                                heart.className = 'bx bx-heart';
+                            }
                         }
                     } else {
                         alert(val.message);
@@ -579,50 +592,122 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             
             if (data.status === 'success') {
-                // Ingest Statistics
-                document.getElementById('stat-listings').textContent = data.stats.listings;
-                document.getElementById('stat-users').textContent = data.stats.users;
-                document.getElementById('stat-listers').textContent = data.stats.listers;
-                document.getElementById('stat-cities').textContent = data.stats.cities;
+                // Ingest Statistics (safely guarded)
+                const statListings = document.getElementById('stat-listings');
+                if (statListings) statListings.textContent = data.stats.listings;
+                const statUsers = document.getElementById('stat-users');
+                if (statUsers) statUsers.textContent = data.stats.users;
+                const statListers = document.getElementById('stat-listers');
+                if (statListers) statListers.textContent = data.stats.listers;
+                const statCities = document.getElementById('stat-cities');
+                if (statCities) statCities.textContent = data.stats.cities;
 
-                // Render Featured Listings Grid
+                // Render Featured Listings Grid with custom premium styles
                 if (data.featured.length === 0) {
                     featContainer.innerHTML = `<div class="col-12 text-center py-4"><p class="text-muted">No premium listings found. Seed database to unlock results.</p></div>`;
                 } else {
                     let featHtml = '';
                     data.featured.forEach(item => {
                         const img = item.images.length > 0 ? item.images[0] : 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80';
+                        
+                        // Calculate coordinate distance approximation on client side
+                        let distance = null;
+                        if (userLat !== null && userLng !== null && item.latitude !== undefined && item.longitude !== undefined) {
+                            let latDiff = item.latitude - userLat;
+                            let lngDiff = item.longitude - userLng;
+                            distance = Math.sqrt((latDiff * 111) ** 2 + (lngDiff * 102) ** 2);
+                        }
+
+                        // Determine category icon
+                        let categoryIcon = 'bx-building-house';
+                        const cat = item.category.toLowerCase();
+                        if (cat === 'street_food') categoryIcon = 'bx-restaurant';
+                        else if (cat === 'pg') categoryIcon = 'bx-bed';
+                        else if (cat === 'hostel') categoryIcon = 'bx-hotel';
+                        else if (cat === 'room') categoryIcon = 'bx-home-alt';
+                        else if (cat === 'tiffin') categoryIcon = 'bx-dish';
+                        else if (cat === 'laundry') categoryIcon = 'bx-water';
+                        else if (cat === 'medical') categoryIcon = 'bx-first-aid';
+                        else if (cat === 'hospital') categoryIcon = 'bx-plus-medical';
+                        else if (cat === 'atm') categoryIcon = 'bx-credit-card';
+
+                        // Build overlays
+                        let badges = '';
+                        if (item.is_premium) badges += '<span class="badge bg-warning text-white"><i class="bx bxs-crown"></i> PREMIUM</span>';
+                        else if (item.is_trending) badges += '<span class="badge bg-danger text-white"><i class="bx bxs-hot"></i> TRENDING</span>';
+                        if (item.vendor_verified) badges += '<span class="badge bg-success text-white"><i class="bx bxs-shield-checked"></i> VERIFIED</span>';
+
+                        // Distance badge
+                        let distanceHtml = '';
+                        if (distance !== null) {
+                            distanceHtml = `<span class="badge bg-secondary-subtle text-secondary py-1 px-2 rounded-pill small" style="font-size: 0.7rem;"><i class="bx bx-navigation text-secondary me-1"></i>${distance.toFixed(1)} km away</span>`;
+                        }
+
+                        // Amenities badges
+                        let amenitiesHtml = '';
+                        const cleanAmenities = (item.amenities || []).map(a => a.trim().toLowerCase());
+                        if (cleanAmenities.includes('wifi')) {
+                            amenitiesHtml += `<span class="badge bg-light text-dark border py-1 px-2 rounded-pill small" style="font-size: 0.7rem; font-weight: 500;"><i class="bx bx-wifi text-primary me-1"></i>WiFi</span>`;
+                        }
+                        if (cleanAmenities.includes('ac')) {
+                            amenitiesHtml += `<span class="badge bg-light text-dark border py-1 px-2 rounded-pill small" style="font-size: 0.7rem; font-weight: 500;"><i class="bx bx-wind text-info me-1"></i>AC</span>`;
+                        }
+                        if (cleanAmenities.includes('food') || item.food_included) {
+                            amenitiesHtml += `<span class="badge bg-light text-dark border py-1 px-2 rounded-pill small" style="font-size: 0.7rem; font-weight: 500;"><i class="bx bx-dish text-success me-1"></i>Food</span>`;
+                        }
+                        if (cleanAmenities.includes('laundry')) {
+                            amenitiesHtml += `<span class="badge bg-light text-dark border py-1 px-2 rounded-pill small" style="font-size: 0.7rem; font-weight: 500;"><i class="bx bx-closet text-warning me-1"></i>Laundry</span>`;
+                        }
+
+                        // Price rendering with stay-period suffix if PG/Room/Hostel
+                        let periodText = '';
+                        if (['pg', 'hostel', 'room', 'flat'].includes(cat)) {
+                            periodText = '<span class="card-price-period">/mo</span>';
+                        }
+                        const priceText = item.price > 0 ? `₹${Math.round(item.price)}${periodText}` : 'Free/Inquiry';
+
                         featHtml += `
-                            <div class="col-lg-4 col-md-6 mb-4">
-                                <div class="listing-card">
-                                    <div class="card-img-wrapper">
+                            <div class="col-listing-premium">
+                                <div class="listing-card-premium">
+                                    <div class="img-wrapper-premium">
                                         <img src="${img}" alt="${item.title}">
-                                        <div class="position-absolute top-2 left-2 p-2 d-flex flex-wrap gap-1" style="z-index: 10;">
-                                            ${item.is_premium ? '<span class="badge badge-premium">PREMIUM</span>' : ''}
-                                            ${item.vendor_verified ? '<span class="badge badge-verified"><i class="bx bxs-shield-checked"></i> VERIFIED</span>' : ''}
+                                        <div class="badge-overlay-premium d-flex flex-wrap gap-1">
+                                            ${badges}
+                                        </div>
+                                        <div class="rating-overlay-premium">
+                                            <i class="bx bxs-star text-warning"></i> ${item.hygiene_rating}
                                         </div>
                                     </div>
-                                    <div class="p-3">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <span class="text-muted small"><i class="bx bx-purchase-tag"></i> ${item.category.toUpperCase()}</span>
-                                            <span class="rating-badge"><i class="bx bxs-star"></i> ${item.hygiene_rating}</span>
+                                    <div class="card-body-premium">
+                                        <span class="text-muted small mb-1"><i class="bx ${categoryIcon}"></i> ${item.category.toUpperCase()}</span>
+                                        <h5 class="card-title-premium text-truncate"><a href="listing_detail.html?id=${item.id}">${item.title}</a></h5>
+                                        <p class="card-subtext-premium"><i class="bx bx-map"></i> ${item.address}, ${item.city}</p>
+                                        
+                                        <!-- Distance & Amenities Row -->
+                                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                            ${distanceHtml}
+                                            ${amenitiesHtml}
                                         </div>
-                                        <h5 class="card-title text-truncate mb-1"><a href="listing_detail.html?id=${item.id}" class="text-decoration-none text-dark">${item.title}</a></h5>
-                                        <p class="text-muted small mb-2 text-truncate"><i class="bx bx-map"></i> ${item.address}, ${item.city}</p>
-                                        <hr class="my-2">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span class="fs-5 fw-bold text-primary">₹${Math.round(item.price)}</span>
-                                            <a href="listing_detail.html?id=${item.id}" class="btn btn-sm btn-outline-primary">View Details</a>
+                                        
+                                        <hr class="card-divider-premium">
+                                        
+                                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                                            <span class="card-price-premium">${priceText}</span>
+                                            <a href="listing_detail.html?id=${item.id}" class="btn btn-sm btn-outline-primary px-3 rounded-pill">View Details</a>
                                         </div>
+                                        <button class="bookmark-btn-premium favorite-btn-toggle" data-id="${item.id}" title="Bookmark listing">
+                                            <i class="${item.is_favorited ? 'bx bxs-bookmark text-danger' : 'bx bx-bookmark'}"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         `;
                     });
                     featContainer.innerHTML = featHtml;
+                    bindFavoriteToggles();
                 }
 
-                // Render Food split
+                // Render Food split (kept for fallback safety but typically d-none or not present in premium index.html)
                 const foodContainer = document.getElementById('trending-food-container');
                 if (foodContainer) {
                     if (data.popular_food.length === 0) {
@@ -651,7 +736,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                // Render Stays split
+                // Render Stays split (kept for fallback safety but typically d-none or not present in premium index.html)
                 const staysContainer = document.getElementById('recommended-stays-container');
                 if (staysContainer) {
                     if (data.recommended_rooms.length === 0) {
