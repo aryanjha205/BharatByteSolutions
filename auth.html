@@ -91,92 +91,105 @@
     <!-- Main Content -->
     <main>
         <section class="py-5 d-flex align-items-center" style="min-height: calc(100vh - 200px);">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-lg-5 col-md-8">
+                          <div class="row justify-content-center">
+                    <div class="col-lg-10 col-md-12">
                         
-                        <!-- Main Authentication Card -->
-                        <div class="glass-panel" id="auth-panel-container">
-                            
-                            <!-- Tab toggle header -->
-                            <div class="d-flex text-center mb-4 border-bottom pb-2">
-                                <div class="flex-fill">
-                                    <button id="toggle-login-btn" class="btn btn-link text-decoration-none fw-bold fs-5 text-primary border-bottom border-primary border-3 pb-2 w-100 rounded-0">Login</button>
+                        <!-- Upgraded Split Auth Card -->
+                        <div class="card border-0 shadow-lg overflow-hidden" style="border-radius: 24px; background: var(--bg-card); min-height: 580px;">
+                            <div class="row g-0 align-items-stretch" style="min-height: 580px;">
+                                <!-- Left side: Hero Poster Image (hidden on mobile) -->
+                                <div class="col-lg-6 d-none d-lg-block" style="background: url('static/hero.png') no-repeat center center; background-size: cover; min-height: 580px; position: relative;">
+                                    <div class="h-100 w-100 d-flex flex-column justify-content-end p-5 text-white" style="background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.25)); position: absolute; top:0; left:0;">
+                                        <h3 class="fw-bold mb-2 text-white">Bharat Byte 🇮🇳</h3>
+                                        <p class="text-white-50 mb-0">Discover local street food stalls, verified student PGs, boys & girls hostels, and essential daily services nearby.</p>
+                                    </div>
                                 </div>
-                                <div class="flex-fill">
-                                    <button id="toggle-register-btn" class="btn btn-link text-decoration-none fw-bold fs-5 text-muted pb-2 w-100 rounded-0">Register</button>
-                                </div>
-                            </div>
-
-                            <!-- 1. LOGIN FORM CONTEXT -->
-                            <div id="login-form-wrapper">
-                                <form id="auth-login-form">
-                                    <div class="mb-3">
-                                        <label class="small fw-semibold text-muted mb-1">Email Address</label>
-                                        <input type="email" id="login-email" class="form-control form-control-custom" placeholder="e.g. amit@gmail.com" required>
-                                    </div>
-                                    <div class="mb-4">
-                                        <label class="small fw-semibold text-muted mb-1">Password</label>
-                                        <input type="password" id="login-password" class="form-control form-control-custom" placeholder="••••••••" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold fs-6">Sign In Account <i class="bx bx-log-in"></i></button>
-                                </form>
-                            </div>
-
-                            <!-- 2. REGISTRATION FORM CONTEXT -->
-                            <div id="register-form-wrapper" class="d-none">
-                                <form id="auth-register-form">
-                                    <div class="mb-3">
-                                        <label class="small fw-semibold text-muted mb-1">Full Username</label>
-                                        <input type="text" id="reg-username" class="form-control form-control-custom" placeholder="e.g. Amit Patel" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="small fw-semibold text-muted mb-1">Email Address</label>
-                                        <input type="email" id="reg-email" class="form-control form-control-custom" placeholder="e.g. amit@gmail.com" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="small fw-semibold text-muted mb-1">Password</label>
-                                        <input type="password" id="reg-password" class="form-control form-control-custom" placeholder="••••••••" required>
-                                    </div>
-                                    
-                                    <div class="mb-3 row g-2">
-                                        <div class="col-md-6">
-                                            <label class="small fw-semibold text-muted mb-1">Account Role</label>
-                                            <select id="reg-role" class="form-select form-control-custom">
-                                                <option value="user">User (Discovery)</option>
-                                                <option value="lister">Lister (Vendor)</option>
-                                            </select>
+                                <!-- Right side: Auth forms -->
+                                <div class="col-lg-6 p-4 p-md-5 d-flex flex-column justify-content-center">
+                                    <div id="auth-panel-container">
+                                        
+                                        <!-- Tab toggle header -->
+                                        <div class="d-flex text-center mb-4 border-bottom pb-2">
+                                            <div class="flex-fill">
+                                                <button id="toggle-login-btn" class="btn btn-link text-decoration-none fw-bold fs-5 text-primary border-bottom border-primary border-3 pb-2 w-100 rounded-0">Login</button>
+                                            </div>
+                                            <div class="flex-fill">
+                                                <button id="toggle-register-btn" class="btn btn-link text-decoration-none fw-bold fs-5 text-muted pb-2 w-100 rounded-0">Register</button>
+                                            </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <label class="small fw-semibold text-muted mb-1">Referral Code (Optional)</label>
-                                            <input type="text" id="reg-referral" class="form-control form-control-custom" placeholder="e.g. BBADMIN">
+
+                                        <!-- 1. LOGIN FORM CONTEXT -->
+                                        <div id="login-form-wrapper">
+                                            <form id="auth-login-form">
+                                                <div class="mb-3">
+                                                    <label class="small fw-semibold text-muted mb-1">Email Address</label>
+                                                    <input type="email" id="login-email" class="form-control form-control-custom" placeholder="e.g. amit@gmail.com" required>
+                                                </div>
+                                                <div class="mb-4">
+                                                    <label class="small fw-semibold text-muted mb-1">Password</label>
+                                                    <input type="password" id="login-password" class="form-control form-control-custom" placeholder="••••••••" required>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary w-100 py-3 fw-bold fs-6">Sign In Account <i class="bx bx-log-in"></i></button>
+                                            </form>
                                         </div>
+
+                                        <!-- 2. REGISTRATION FORM CONTEXT -->
+                                        <div id="register-form-wrapper" class="d-none">
+                                            <form id="auth-register-form">
+                                                <div class="mb-3">
+                                                    <label class="small fw-semibold text-muted mb-1">Full Username</label>
+                                                    <input type="text" id="reg-username" class="form-control form-control-custom" placeholder="e.g. Amit Patel" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="small fw-semibold text-muted mb-1">Email Address</label>
+                                                    <input type="email" id="reg-email" class="form-control form-control-custom" placeholder="e.g. amit@gmail.com" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="small fw-semibold text-muted mb-1">Password</label>
+                                                    <input type="password" id="reg-password" class="form-control form-control-custom" placeholder="••••••••" required>
+                                                </div>
+                                                
+                                                <div class="mb-3 row g-2">
+                                                    <div class="col-md-6">
+                                                        <label class="small fw-semibold text-muted mb-1">Account Role</label>
+                                                        <select id="reg-role" class="form-select form-control-custom">
+                                                            <option value="user">User (Discovery)</option>
+                                                            <option value="lister">Lister (Vendor)</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="small fw-semibold text-muted mb-1">Referral Code (Optional)</label>
+                                                        <input type="text" id="reg-referral" class="form-control form-control-custom" placeholder="e.g. BBADMIN">
+                                                    </div>
+                                                </div>
+                                                
+                                                <button type="submit" class="btn btn-primary w-100 py-3 fw-bold fs-6">Create Account <i class="bx bx-user-plus"></i></button>
+                                            </form>
+                                        </div>
+
+                                        <!-- 3. OTP VERIFICATION SIMULATION PANELS -->
+                                        <div id="otp-form-wrapper" class="d-none text-center">
+                                            <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-circle d-inline-block mb-3" style="width: 60px; height: 60px; display: flex; justify-content: center; align-items: center;">
+                                                <i class="bx bx-envelope fs-2"></i>
+                                            </div>
+                                            <h4 class="fw-bold mb-1">Verify Your Email</h4>
+                                            <p class="text-muted small mb-4">We sent a 6-digit verification code to your registered email address.</p>
+                                            
+                                            <div class="alert alert-info py-2 small text-center mb-3">
+                                                <strong>Sandbox Verification Preview OTP:</strong> <span id="sandbox-otp-code" class="fw-extrabold text-primary">000000</span>
+                                            </div>
+
+                                            <form id="auth-otp-form">
+                                                <div class="mb-4">
+                                                    <input type="text" id="otp-code-input" class="form-control form-control-custom text-center py-2 fs-3 fw-bold letter-spacing-lg" placeholder="123456" maxlength="6" required>
+                                                </div>
+                                                <button type="submit" class="btn btn-success w-100 py-3 fw-bold fs-6">Verify & Launch <i class="bx bx-check-shield"></i></button>
+                                            </form>
+                                        </div>
+
                                     </div>
-                                    
-                                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold fs-6">Create Account <i class="bx bx-user-plus"></i></button>
-                                </form>
-                            </div>
-
-                            <!-- 3. OTP VERIFICATION SIMULATION PANELS -->
-                            <div id="otp-form-wrapper" class="d-none text-center">
-                                <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-circle d-inline-block mb-3" style="width: 60px; height: 60px; display: flex; justify-content: center; align-items: center;">
-                                    <i class="bx bx-envelope fs-2"></i>
                                 </div>
-                                <h4 class="fw-bold mb-1">Verify Your Email</h4>
-                                <p class="text-muted small mb-4">We sent a 6-digit verification code to your registered email address.</p>
-                                
-                                <div class="alert alert-info py-2 small text-center mb-3">
-                                    <strong>Sandbox Verification Preview OTP:</strong> <span id="sandbox-otp-code" class="fw-extrabold text-primary">000000</span>
-                                </div>
-
-                                <form id="auth-otp-form">
-                                    <div class="mb-4">
-                                        <input type="text" id="otp-code-input" class="form-control form-control-custom text-center py-2 fs-3 fw-bold letter-spacing-lg" placeholder="123456" maxlength="6" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-success w-100 py-3 fw-bold fs-6">Verify & Launch <i class="bx bx-check-shield"></i></button>
-                                </form>
                             </div>
-
                         </div>
 
                     </div>
