@@ -331,51 +331,23 @@
                         
                         if (val.status === 'success') {
                             alert(val.message);
-                            // Cache the user_id for OTP validation
+                            // Store user session state state-lessly on the client side
                             localStorage.setItem('user_id', val.user_id);
-                            
-                            // Hide selectors, display OTP panel
-                            toggleLogin.classList.add('d-none');
-                            toggleReg.classList.add('d-none');
-                            regWrapper.classList.add('d-none');
-                            otpWrapper.classList.remove('d-none');
-                            
-                            // Display generated OTP preview for sandbox ease
-                            document.getElementById('sandbox-otp-code').textContent = val.otp_preview;
+                            localStorage.setItem('username', val.username);
+                            localStorage.setItem('role', val.role);
+                            localStorage.setItem('reward_points', val.reward_points);
+
+                            if (val.role === 'lister') {
+                                window.location.href = 'dashboard.html';
+                            } else {
+                                window.location.href = 'index.html';
+                            }
                         } else {
                             alert(val.message);
                         }
                     } catch (err) {
                         console.error(err);
                         alert("Connection failed to registration endpoint.");
-                    }
-                });
-            }
-
-            // AJAX OTP verify submission
-            if (otpForm) {
-                otpForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const otp = document.getElementById('otp-code-input').value;
-                    const userId = localStorage.getItem('user_id');
-
-                    try {
-                        const res = await fetch(`${API_BASE_URL}/api/auth/verify-otp`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ otp: otp, user_id: userId })
-                        });
-                        const val = await res.json();
-                        
-                        if (val.status === 'success') {
-                            alert(val.message);
-                            window.location.href = 'index.html';
-                        } else {
-                            alert(val.message);
-                        }
-                    } catch (err) {
-                        console.error(err);
-                        alert("Connection failed to verification endpoint.");
                     }
                 });
             }

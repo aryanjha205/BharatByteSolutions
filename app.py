@@ -483,7 +483,7 @@ def api_register():
         email=email,
         password_hash=pass_hash,
         role=role,
-        is_verified=False
+        is_verified=True
     )
 
     # Generate unique referral code
@@ -498,33 +498,29 @@ def api_register():
             new_user.reward_points += 50   # Welcome reward
             db.session.add(referrer)
 
-    # Generate OTP Code
-    otp = ''.join(random.choices(string.digits, k=6))
-    new_user.otp_code = otp
-
     db.session.add(new_user)
+    
+    # Add welcome notification immediately
+    welcome_notif = Notification(
+        user_id=new_user.id,
+        title="Account Created! 🎉",
+        message=f"Welcome to Bharat Byte, {new_user.username}! Discover nearby food stalls, rentals, PGs, and lots more."
+    )
+    db.session.add(welcome_notif)
     db.session.commit()
 
-    # Send Simulated/Real OTP
-    otp_subject = f"Verify Your Bharat Byte Account - {otp}"
-    otp_body = f"""
-    <h2>Welcome to Bharat Byte!</h2>
-    <p>Please verify your email address to unlock discovery and accommodation bookings.</p>
-    <p style="font-size: 24px; font-weight: bold; letter-spacing: 2px; color: #4f46e5;">{otp}</p>
-    <p>Thank you!</p>
-    """
-    send_async_email(otp_subject, email, otp_body, is_html=True)
-
-    # Automatically set session but mark unverified
+    # Automatically set session
     session['user_id'] = new_user.id
     session['username'] = new_user.username
     session['role'] = new_user.role
 
     return jsonify({
         'status': 'success', 
-        'message': 'Registration successful! Verification OTP sent to email.',
+        'message': 'Registration successful!',
         'user_id': new_user.id,
-        'otp_preview': otp  # Send back for sandbox verification ease
+        'username': new_user.username,
+        'role': new_user.role,
+        'reward_points': new_user.reward_points
     })
 
 @app.route('/api/auth/verify-otp', methods=['POST'])
