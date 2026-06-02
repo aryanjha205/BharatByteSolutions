@@ -98,19 +98,40 @@
                 <div class="row align-items-center gy-5">
                     <div class="col-lg-6">
                         <h1 class="display-4 fw-extrabold mb-3 text-dark">
-                            Discover India's <br>
-                            <span class="text-primary">Local Byte & Stays</span>
+                            Find <span class="text-primary">Everything</span> Nearby
                         </h1>
                         <p class="lead text-muted mb-4" data-translate="find_nearby">
-                            Find top-rated nearby street food stalls, premium rooms for rent, PGs, hostels, tiffin deliveries, and essential local services—all in one place!
+                            Street Food, Rooms, PGs & More! Find top-rated services near you.
                         </p>
                         
-                        <!-- Hero Core Search Bar -->
-                        <div class="hero-search-box">
-                            <form action="listings.html" method="GET" class="row g-2">
-                                <div class="col-md-4">
-                                    <select name="category" class="form-select border-0 bg-light py-3 fs-6" style="border-radius: 8px;">
-                                        <option value="all">All Categories</option>
+                        <!-- Verification badges -->
+                        <div class="d-flex align-items-center gap-2 flex-wrap mb-4">
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle py-2 px-3 rounded-pill"><i class="bx bx-check-shield text-success me-1"></i> Verified Listings</span>
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle py-2 px-3 rounded-pill"><i class="bx bx-purchase-tag text-success me-1"></i> Best Prices</span>
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle py-2 px-3 rounded-pill"><i class="bx bx-group text-success me-1"></i> Trusted by Thousands</span>
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle py-2 px-3 rounded-pill"><i class="bx bx-lock-alt text-success me-1"></i> Secure & Easy</span>
+                        </div>
+                        
+                        <!-- Hero Core Search Bar (Airbnb style) -->
+                        <div class="hero-search-box-premium">
+                            <form action="listings.html" method="GET" class="d-flex align-items-center flex-grow-1 flex-wrap flex-lg-nowrap gap-3 w-100">
+                                <!-- Location -->
+                                <div class="search-input-field">
+                                    <label><i class="bx bx-map-pin text-primary"></i> Current Location</label>
+                                    <input type="text" id="hero-gps-display" class="border-0 bg-transparent text-muted" value="Detecting Location..." readonly style="pointer-events: none; outline: none;">
+                                </div>
+                                <div class="search-divider"></div>
+                                <!-- Keywords -->
+                                <div class="search-input-field">
+                                    <label><i class="bx bx-search text-primary"></i> What are you looking for?</label>
+                                    <input type="text" name="search" placeholder="e.g. Pizza, PG, Dosa, Hostel..." data-translate="search_placeholder">
+                                </div>
+                                <div class="search-divider"></div>
+                                <!-- Category -->
+                                <div class="search-input-field">
+                                    <label><i class="bx bx-grid-alt text-primary"></i> All Categories</label>
+                                    <select name="category" class="bg-transparent border-0">
+                                        <option value="all">Select Category</option>
                                         <option value="street_food">Street Food Stalls</option>
                                         <option value="pg">PG Accommodations</option>
                                         <option value="hostel">Hostels</option>
@@ -121,15 +142,18 @@
                                         <option value="atm">ATMs</option>
                                     </select>
                                 </div>
-                                <div class="col-md-5">
-                                    <div class="position-relative">
-                                        <input type="text" name="search" class="form-control border-0 bg-light py-3 ps-4 fs-6" placeholder="dosa, PG for girls, sector 15..." style="border-radius: 8px;" data-translate="search_placeholder">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <button type="submit" class="btn btn-primary w-100 py-3 fw-semibold"><i class="bx bx-search"></i> Search</button>
-                                </div>
+                                <button type="submit" class="search-btn-premium ms-lg-2"><i class="bx bx-search"></i> Search</button>
                             </form>
+                        </div>
+
+                        <!-- Popular Searches tag row -->
+                        <div class="d-flex align-items-center gap-2 flex-wrap mt-4 small text-muted">
+                            <span class="fw-semibold">Popular Searches:</span>
+                            <a href="listings.html?search=pizza" class="badge bg-white text-dark text-decoration-none border py-2 px-3 rounded-pill"><i class="bx bx-restaurant text-warning me-1"></i> Pizza</a>
+                            <a href="listings.html?search=Koramangala" class="badge bg-white text-dark text-decoration-none border py-2 px-3 rounded-pill"><i class="bx bx-map-pin text-danger me-1"></i> PG in Koramangala</a>
+                            <a href="listings.html?search=dosa" class="badge bg-white text-dark text-decoration-none border py-2 px-3 rounded-pill"><i class="bx bx-dish text-info me-1"></i> Dosa</a>
+                            <a href="listings.html?category=hostel" class="badge bg-white text-dark text-decoration-none border py-2 px-3 rounded-pill"><i class="bx bx-bed text-primary me-1"></i> Hostel near me</a>
+                            <a href="listings.html?category=tiffin" class="badge bg-white text-dark text-decoration-none border py-2 px-3 rounded-pill"><i class="bx bx-dish text-success me-1"></i> Tiffin Service</a>
                         </div>
                     </div>
                     
@@ -148,36 +172,38 @@
                     <div class="bg-primary mx-auto" style="width: 60px; height: 4px; border-radius: 2px;"></div>
                 </div>
                 
-                <div class="row row-cols-2 row-cols-md-5 g-4">
-                    <div class="col">
-                        <a href="listings.html?category=street_food" class="category-card">
-                            <i class="bx bx-restaurant category-icon text-warning"></i>
-                            <h6 class="fw-bold text-dark">Street Food</h6>
-                        </a>
-                    </div>
-                    <div class="col">
-                        <a href="listings.html?category=pg" class="category-card">
-                            <i class="bx bx-building category-icon text-danger"></i>
-                            <h6 class="fw-bold text-dark">Student PGs</h6>
-                        </a>
-                    </div>
-                    <div class="col">
-                        <a href="listings.html?category=hostel" class="category-card">
-                            <i class="bx bxs-institution category-icon text-success"></i>
-                            <h6 class="fw-bold text-dark">Hostels</h6>
-                        </a>
-                    </div>
-                    <div class="col">
-                        <a href="listings.html?category=room" class="category-card">
-                            <i class="bx bx-bed category-icon text-primary"></i>
-                            <h6 class="fw-bold text-dark">Rooms & Flats</h6>
-                        </a>
-                    </div>
-                    <div class="col">
-                        <a href="listings.html?category=tiffin" class="category-card">
-                            <i class="bx bx-dish category-icon text-info"></i>
-                            <h6 class="fw-bold text-dark">Tiffin Meals</h6>
-                        </a>
+                <div class="category-scroll-wrapper">
+                    <div class="row mobile-scroll-container row-cols-md-5 g-4">
+                        <div class="col">
+                            <a href="listings.html?category=street_food" class="category-card">
+                                <i class="bx bx-restaurant category-icon text-warning"></i>
+                                <h6 class="fw-bold text-dark">Street Food</h6>
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a href="listings.html?category=pg" class="category-card">
+                                <i class="bx bx-building category-icon text-danger"></i>
+                                <h6 class="fw-bold text-dark">Student PGs</h6>
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a href="listings.html?category=hostel" class="category-card">
+                                <i class="bx bxs-institution category-icon text-success"></i>
+                                <h6 class="fw-bold text-dark">Hostels</h6>
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a href="listings.html?category=room" class="category-card">
+                                <i class="bx bx-bed category-icon text-primary"></i>
+                                <h6 class="fw-bold text-dark">Rooms & Flats</h6>
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a href="listings.html?category=tiffin" class="category-card">
+                                <i class="bx bx-dish category-icon text-info"></i>
+                                <h6 class="fw-bold text-dark">Tiffin Meals</h6>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

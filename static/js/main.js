@@ -251,6 +251,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (lngInput) lngInput.value = userLng;
                     console.log(`Automatic Geolocation acquired: ${userLat}, ${userLng}`);
                     
+                    const heroGps = document.getElementById('hero-gps-display');
+                    if (heroGps) {
+                        heroGps.value = `${userLat.toFixed(4)}, ${userLng.toFixed(4)}`;
+                    }
+                    
                     if (map) {
                         map.setView([userLat, userLng], 14);
                         L.circle([userLat, userLng], {
@@ -274,6 +279,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     userLng = 72.6369;
                     if (latInput) latInput.value = userLat;
                     if (lngInput) lngInput.value = userLng;
+                    
+                    const heroGps = document.getElementById('hero-gps-display');
+                    if (heroGps) {
+                        heroGps.value = "Gandhinagar, GJ";
+                    }
                     
                     const listGrid = document.getElementById('listings-search-grid');
                     if (listGrid) {
@@ -1443,6 +1453,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 logs.appendChild(receivedDiv);
                 logs.scrollTop = logs.scrollHeight;
             }, 1500);
+        });
+    }
+
+    // =========================================
+    // 13. MOBILE MAP/LIST FAB VIEW TOGGLE
+    // =========================================
+    const mobileToggleBtn = document.getElementById('mobile-view-toggle-btn');
+    if (mobileToggleBtn) {
+        mobileToggleBtn.addEventListener('click', () => {
+            const splitContainer = document.querySelector('.split-container');
+            if (splitContainer) {
+                splitContainer.classList.toggle('show-map-view');
+                const isMapView = splitContainer.classList.contains('show-map-view');
+                
+                const btnText = mobileToggleBtn.querySelector('span');
+                const btnIcon = mobileToggleBtn.querySelector('i');
+                if (isMapView) {
+                    if (btnText) btnText.textContent = 'Show List';
+                    if (btnIcon) btnIcon.className = 'bx bx-list-ul';
+                } else {
+                    if (btnText) btnText.textContent = 'Show Map';
+                    if (btnIcon) btnIcon.className = 'bx bx-map';
+                }
+                
+                // Redraw leaflet map boundary on toggle size changes
+                if (map && isMapView) {
+                    setTimeout(() => {
+                        map.invalidateSize();
+                    }, 100);
+                }
+            }
         });
     }
 

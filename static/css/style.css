@@ -7,15 +7,15 @@
 
 /* --- Theme Variables --- */
 :root {
-    --primary: #4f46e5;
-    --primary-hover: #4338ca;
-    --primary-light: rgba(79, 70, 229, 0.05);
-    --primary-glow: rgba(79, 70, 229, 0.2);
+    --primary: #ff6b00; /* Warm Indian Saffron/Orange */
+    --primary-hover: #e05e00;
+    --primary-light: rgba(255, 107, 0, 0.06);
+    --primary-glow: rgba(255, 107, 0, 0.2);
     
-    --secondary: #ec4899;
-    --secondary-hover: #db2777;
-    --secondary-light: rgba(236, 72, 153, 0.05);
-    --secondary-glow: rgba(236, 72, 153, 0.2);
+    --secondary: #1e3a8a; /* Premium Deep Indigo/Navy */
+    --secondary-hover: #1e3a8a;
+    --secondary-light: rgba(30, 58, 138, 0.06);
+    --secondary-glow: rgba(30, 58, 138, 0.2);
     
     --emerald: #10b981;
     --emerald-light: rgba(16, 185, 129, 0.08);
@@ -32,9 +32,9 @@
     /* Light Theme Palette */
     --bg-main: #f8fafc;
     --bg-card: #ffffff;
-    --bg-navbar: rgba(255, 255, 255, 0.75);
-    --border-color: #f1f5f9;
-    --border-hover: #e2e8f0;
+    --bg-navbar: rgba(255, 255, 255, 0.85);
+    --border-color: #e2e8f0;
+    --border-hover: #cbd5e1;
     --text-main: #0f172a;
     --text-muted: #64748b;
     
@@ -43,7 +43,7 @@
     --shadow-md: 0 10px 30px -10px rgba(0, 0, 0, 0.06), 0 4px 12px -2px rgba(0, 0, 0, 0.02);
     --shadow-lg: 0 30px 60px -15px rgba(0, 0, 0, 0.08), 0 10px 20px -5px rgba(0, 0, 0, 0.03);
     
-    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-bg: rgba(255, 255, 255, 0.7);
     --glass-border: rgba(255, 255, 255, 0.6);
     --loader-bg: #ffffff;
     
@@ -831,4 +831,248 @@ input[type=range].form-range::-webkit-slider-thumb:hover {
 }
 .footer-custom a:hover {
     color: var(--primary);
+}
+
+/* ====================================================
+   MOBILE OPTIMIZATIONS & NEW LAYOUT PATTERNS
+   ==================================================== */
+
+/* Premium Horizontal Scroll Containers */
+.mobile-scroll-container {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    gap: 16px;
+    padding: 10px 4px 20px 4px;
+}
+.mobile-scroll-container::-webkit-scrollbar {
+    display: none;
+}
+.mobile-scroll-container .col {
+    flex: 0 0 auto;
+    width: 140px;
+}
+
+@media (min-width: 992px) {
+    .mobile-scroll-container {
+        flex-wrap: wrap !important;
+        overflow-x: visible !important;
+        padding: 0 !important;
+    }
+    .mobile-scroll-container .col {
+        flex: 1 1 0% !important;
+        width: auto !important;
+    }
+}
+
+/* Scrollable Tabs for Mobile Screens */
+@media (max-width: 767px) {
+    .nav-tabs {
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        justify-content: flex-start !important;
+    }
+    .nav-tabs::-webkit-scrollbar {
+        display: none;
+    }
+    .nav-tabs .nav-item {
+        flex: 0 0 auto !important;
+    }
+}
+
+/* Airbnb Style Hero Search Bar */
+.hero-search-box-premium {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    padding: 8px 12px 8px 24px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hero-search-box-premium:focus-within {
+    box-shadow: 0 15px 35px var(--primary-glow);
+    border-color: var(--primary);
+}
+.search-divider {
+    width: 1px;
+    height: 36px;
+    background-color: var(--border-color);
+}
+.search-input-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.search-input-field label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-main);
+    margin-bottom: 2px;
+    letter-spacing: 0.5px;
+}
+.search-input-field select, .search-input-field input {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    box-shadow: none !important;
+    width: 100%;
+}
+.search-input-field select:focus, .search-input-field input:focus {
+    color: var(--text-main);
+}
+.search-btn-premium {
+    background: linear-gradient(135deg, var(--primary) 0%, #f97316 100%);
+    color: white !important;
+    border: none;
+    border-radius: 30px;
+    height: 48px;
+    padding: 0 28px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px var(--primary-glow);
+}
+.search-btn-premium:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 20px var(--primary-glow);
+}
+
+/* Floating Action Button (FAB) Toggle Map vs List for mobile */
+.floating-toggle-btn {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: var(--text-main);
+    color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 30px;
+    padding: 14px 28px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow-lg);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.floating-toggle-btn:hover {
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    background: var(--text-main);
+    color: var(--bg-card);
+}
+.floating-toggle-btn i {
+    font-size: 1.2rem;
+}
+
+/* Mobile specific styling for exploration split page */
+@media (max-width: 991px) {
+    .split-container {
+        flex-direction: column;
+        height: calc(100vh - 72px) !important;
+        position: relative;
+    }
+    .sidebar-listings {
+        width: 100% !important;
+        height: 100% !important;
+        overflow-y: auto !important;
+        display: block;
+    }
+    .map-view-panel {
+        width: 100% !important;
+        height: 100% !important;
+        display: none;
+    }
+    /* Dynamic states controlled by JavaScript */
+    .split-container.show-map-view .sidebar-listings {
+        display: none !important;
+    }
+    .split-container.show-map-view .map-view-panel {
+        display: block !important;
+    }
+    .floating-toggle-btn {
+        display: flex !important;
+    }
+    
+    /* Responsive hero search bar stacking */
+    .hero-search-box-premium {
+        flex-direction: column;
+        border-radius: 20px;
+        padding: 20px;
+        align-items: stretch;
+        gap: 16px;
+    }
+    .search-divider {
+        display: none;
+    }
+    .search-input-field select, .search-input-field input {
+        border: 1px solid var(--border-color) !important;
+        border-radius: 10px !important;
+        padding: 12px 14px !important;
+        background: var(--bg-card) !important;
+    }
+    .search-btn-premium {
+        width: 100%;
+        justify-content: center;
+        height: 52px;
+    }
+}
+
+/* Category icons row - mobile scroll bar design */
+@media (max-width: 991px) {
+    .category-scroll-wrapper {
+        margin: 0 -12px;
+        padding: 0 12px;
+    }
+    .category-card {
+        padding: 20px 14px;
+        border-radius: 16px;
+    }
+    .category-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+        padding: 10px;
+    }
+}
+
+/* General Mobile adjustments */
+@media (max-width: 575px) {
+    .hero-section {
+        padding: 60px 0 50px 0;
+        text-align: center;
+    }
+    .hero-section h1 {
+        font-size: 2.2rem !important;
+        line-height: 1.2;
+    }
+    .hero-section p {
+        font-size: 1rem !important;
+    }
+    .hero-vector-img {
+        margin-top: 20px;
+        max-height: 280px !important;
+    }
+    .stats-card {
+        padding: 16px !important;
+        gap: 12px;
+    }
+    .stats-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1.6rem;
+    }
 }
