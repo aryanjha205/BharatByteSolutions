@@ -1724,3 +1724,34 @@ html {
 [data-theme="dark"] .table th {
     background: rgba(255,255,255,0.03) !important;
 }
+
+/* Custom Mobile Navbar Optimization */
+@media (max-width: 991px) {
+    .navbar-collapse {
+        background: var(--bg-card);
+        border-radius: 16px;
+        margin-top: 12px;
+        padding: 16px;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-md);
+    }
+    .navbar-nav {
+        gap: 8px;
+    }
+    .nav-link {
+        width: 100%;
+        padding: 10px 16px !important;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .navbar-nav .dropdown-menu {
+        border: 1px solid var(--border-color) !important;
+        background-color: var(--bg-main) !important;
+        border-radius: 12px !important;
+        padding: 8px !important;
+        box-shadow: none !important;
+        margin-top: 4px;
+    }
+}

@@ -50,13 +50,25 @@
                             <a class="nav-link" href="index.html"><i class="bx bx-home-alt"></i> Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="listings.html"><i class="bx bx-map-pin"></i> Explore Nearby</a>
-                        </li>
-                        <li class="nav-item d-none" id="nav-lister-studio">
-                            <a class="nav-link" href="dashboard.html"><i class="bx bx-grid-alt"></i> Lister Studio</a>
+                            <a class="nav-link" href="listings.html"><i class="bx bx-compass"></i> Explore</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="admin_login.html"><i class="bx bx-shield-quarter"></i> Admin Portal</a>
+                            <a class="nav-link" href="listings.html?category=street_food"><i class="bx bx-restaurant"></i> Street Food</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="listings.html?category=pg"><i class="bx bx-bed"></i> Rooms & PG</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn-nav-strangers ms-1" href="strangers.html"><span class="pulse-indicator"></span> Talk to Strangers</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="moreDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                More
+                            </a>
+                            <ul class="dropdown-menu border-0 shadow" aria-labelledby="moreDropdown">
+                                <li><a class="dropdown-item" href="admin_login.html"><i class="bx bx-shield-quarter"></i> Admin Portal</a></li>
+                                <li id="nav-lister-studio" class="d-none"><a class="dropdown-item" href="dashboard.html"><i class="bx bx-grid-alt"></i> Lister Studio</a></li>
+                            </ul>
                         </li>
                     </ul>
                     
@@ -176,6 +188,19 @@
                             <h4 class="fw-bold mb-3 border-bottom pb-2">Amenities & Options</h4>
                             <div class="row row-cols-2 row-cols-md-4 g-3" id="detail-amenities-container">
                                 <!-- Amenities list injected here -->
+                            </div>
+                        </div>
+
+                        <!-- Nearby Food Delivery Connection (New Feature) -->
+                        <div class="card p-4 border-0 shadow-sm mb-4 d-none" id="nearby-food-delivery-card" style="border-radius: 16px; background-color: var(--bg-card); color: var(--text-main);">
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3 flex-wrap gap-2">
+                                <h4 class="fw-bold mb-0"><i class="bx bx-restaurant text-warning"></i> Order Nearby Street Food & Tiffin</h4>
+                                <span class="badge bg-success-subtle text-success py-1 px-3 rounded-pill fw-bold" style="font-size: 0.8rem; background-color: #dcfce7; color: #15803d;">Room Delivery Available</span>
+                            </div>
+                            <p class="text-muted small mb-3">Order delicious street food, snacks, and home-style tiffins from vendors near this accommodation. Connected locations are linked directly to your room on the map!</p>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-3" id="nearby-food-list-container">
+                                <!-- Nearby food vendors dynamically loaded -->
                             </div>
                         </div>
 
@@ -313,6 +338,42 @@
                     <div class="modal-footer border-0 pt-0">
                         <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-danger btn-sm">Submit Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Food Order Modal -->
+    <div class="modal fade" id="foodOrderModal" tabindex="-1" aria-labelledby="foodOrderModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background: var(--bg-card); color: var(--text-main); border-radius: 12px; border: 1px solid var(--border-color);">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="foodOrderModalLabel"><i class="bx bx-restaurant text-warning"></i> Order Room Delivery</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--theme-close-btn);"></button>
+                </div>
+                <form id="food-order-submit-form">
+                    <div class="modal-body py-3">
+                        <div class="p-3 bg-light rounded mb-3" style="background: var(--bg-main) !important; border: 1px solid var(--border-color);">
+                            <div class="small text-muted mb-1">Food Stall / Vendor</div>
+                            <h6 class="fw-bold text-dark mb-2" id="order-food-vendor">Loading...</h6>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="small text-muted">Estimated Delivery Time</span>
+                                <span class="fw-bold text-success">15 - 25 mins</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small fw-semibold mb-1">Delivery Address (Room / Bed / PG Name & Number)</label>
+                            <input type="text" id="order-delivery-address" class="form-control" placeholder="e.g. Room 304, Green PG, Sector 15" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small fw-semibold mb-1">Order Items & Instructions</label>
+                            <textarea id="order-items-notes" class="form-control" rows="3" placeholder="e.g. 2 Plates of Hot Samosas, 1 Masala Chai. Make it spicy!" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Place Delivery Order</button>
                     </div>
                 </form>
             </div>

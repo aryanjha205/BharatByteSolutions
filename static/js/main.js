@@ -946,6 +946,136 @@ document.addEventListener('DOMContentLoaded', () => {
                 }).addTo(detailMap);
                 L.marker([item.latitude, item.longitude]).addTo(detailMap).bindPopup(item.title).openPopup();
 
+                // ----------------------------------------------------
+                // NEW FEATURE: ACCOMMODATION TO FOOD DELIVERY CONNECTIONS
+                // ----------------------------------------------------
+                if (['pg', 'hostel', 'room', 'flat'].includes(item.category)) {
+                    const foodCard = document.getElementById('nearby-food-delivery-card');
+                    const foodList = document.getElementById('nearby-food-list-container');
+                    
+                    if (foodCard && foodList) {
+                        foodCard.classList.remove('d-none');
+                        
+                        try {
+                            // Fetch all food listings
+                            const foodRes = await fetch(`${API_BASE_URL}/api/listings?category=street_food`);
+                            const foodData = await foodRes.json();
+                            
+                            if (foodData.status === 'success' && foodData.data.length > 0) {
+                                // Calculate distance for each food stall from current accommodation
+                                const nearbyFoods = foodData.data.map(food => {
+                                    const latDiff = food.latitude - item.latitude;
+                                    const lngDiff = food.longitude - item.longitude;
+                                    const dist = Math.sqrt((latDiff * 111) ** 2 + (lngDiff * 102) ** 2);
+                                    return { ...food, distance: dist };
+                                })
+                                // Filter within 5km and sort by closest
+                                .filter(f => f.distance <= 5.0)
+                                .sort((a, b) => a.distance - b.distance)
+                                .slice(0, 4); // top 4 closest
+                                
+                                if (nearbyFoods.length === 0) {
+                                    foodList.innerHTML = '<div class="col-12 text-muted small py-2">No street food stalls found within 5km of this accommodation.</div>';
+                                } else {
+                                    let foodHtml = '';
+                                    
+                                    // Custom Map marker style for food
+                                    const foodIcon = L.divIcon({
+                                        html: `<div style="background-color: #ff6b00; width: 14px; height: 14px; border-radius: 50%; border: 2.5px solid white; box-shadow: 0 0 6px rgba(0,0,0,0.5);"></div>`,
+                                        className: 'custom-food-marker',
+                                        iconSize: [14, 14]
+                                    });
+
+                                    nearbyFoods.forEach(food => {
+                                        const foodImg = food.images.length > 0 ? food.images[0] : 'https://images.unsplash.com/photo-1601050690597-df056fb4ce78?auto=format&fit=crop&w=400&q=80';
+                                        foodHtml += `
+                                            <div class="col">
+                                                <div class="d-flex gap-3 bg-light p-3 border rounded h-100" style="background: var(--bg-main) !important; border: 1px solid var(--border-color) !important;">
+                                                    <img src="${foodImg}" alt="${food.title}" class="rounded" style="width: 70px; height: 70px; object-fit: cover;">
+                                                    <div class="flex-grow-1 text-truncate">
+                                                        <h6 class="fw-bold mb-1 text-dark text-truncate">${food.title}</h6>
+                                                        <p class="text-muted small mb-1"><i class="bx bxs-star text-warning"></i> ${food.hygiene_rating} | ${food.distance.toFixed(2)} km</p>
+                                                        <button class="btn btn-xs btn-outline-warning py-1 px-2 fw-semibold w-100 btn-order-room-delivery" 
+                                                                data-id="${food.id}" 
+                                                                data-title="${food.title}" 
+                                                                data-price="${food.price}">
+                                                            <i class="bx bx-run"></i> Order Room Delivery
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `;
+                                        
+                                        // Plot food stall on map
+                                        L.marker([food.latitude, food.longitude], { icon: foodIcon }).addTo(detailMap)
+                                            .bindPopup(`<b>${food.title}</b><br>${food.distance.toFixed(2)} km away`);
+                                            
+                                        // Draw dotted connection line (linking accommodation with food stall)
+                                        L.polyline([[item.latitude, item.longitude], [food.latitude, food.longitude]], {
+                                            color: '#ff6b00',
+                                            dashArray: '5, 8',
+                                            weight: 2,
+                                            opacity: 0.95
+                                        }).addTo(detailMap);
+                                    });
+                                    
+                                    foodList.innerHTML = foodHtml;
+                                    
+                                    // Bind order delivery events
+                                    document.querySelectorAll('.btn-order-room-delivery').forEach(btn => {
+                                        btn.addEventListener('click', (evt) => {
+                                            const fId = btn.getAttribute('data-id');
+                                            const fTitle = btn.getAttribute('data-title');
+                                            const fPrice = btn.getAttribute('data-price');
+                                            
+                                            // Set modal values
+                                            document.getElementById('order-food-vendor').textContent = fTitle;
+                                            
+                                            // Show modal
+                                            const orderModal = new bootstrap.Modal(document.getElementById('foodOrderModal'));
+                                            orderModal.show();
+                                            
+                                            // Handle form submit inside modal
+                                            const submitForm = document.getElementById('food-order-submit-form');
+                                            submitForm.onsubmit = async (e) => {
+                                                e.preventDefault();
+                                                const addr = document.getElementById('order-delivery-address').value;
+                                                const notes = document.getElementById('order-items-notes').value;
+                                                
+                                                try {
+                                                    alert(`Order placed successfully!\n\nVendor: ${fTitle}\nItems: ${notes}\nDelivery: ${addr}\n\nEstimated arrival time is 20 minutes.`);
+                                                    orderModal.hide();
+                                                    submitForm.reset();
+                                                    
+                                                    // Trigger notification in backend if logged in
+                                                    if (uid) {
+                                                        await fetch(`${API_BASE_URL}/api/listings/${item.id}/inquire`, {
+                                                            method: 'POST',
+                                                            headers: { 'Content-Type': 'application/json' },
+                                                            body: JSON.stringify({
+                                                                name: cachedUser || "User",
+                                                                email: localStorage.getItem('email') || "user@gmail.com",
+                                                                phone: "Room Delivery",
+                                                                message: `Food Room Delivery: Ordered ${notes} from ${fTitle} to ${addr}`,
+                                                                type: 'booking',
+                                                                user_id: parseInt(uid)
+                                                            })
+                                                        });
+                                                    }
+                                                } catch (err) {
+                                                    console.error(err);
+                                                }
+                                            };
+                                        });
+                                    });
+                                }
+                            }
+                        } catch (err) {
+                            console.error("Failed to fetch nearby food stalls:", err);
+                        }
+                    }
+                }
+
                 // Dynamic Review Post Panel Setup
                 const reviewBox = document.getElementById('write-review-container');
                 const cachedUser = localStorage.getItem('username');
