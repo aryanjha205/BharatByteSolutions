@@ -25,8 +25,6 @@ const viewLobby = document.getElementById('view-lobby');
 const viewSearching = document.getElementById('view-searching');
 const viewChat = document.getElementById('view-chat');
 
-const btnModeText = document.getElementById('btn-mode-text');
-const btnModeVoice = document.getElementById('btn-mode-voice');
 const btnModeVideo = document.getElementById('btn-mode-video');
 const btnStart = document.getElementById('btn-start');
 const btnCancel = document.getElementById('btn-cancel');
@@ -35,6 +33,7 @@ const btnNext = document.getElementById('btn-next');
 const btnStop = document.getElementById('btn-stop');
 const chatForm = document.getElementById('chat-form');
 const chatInput = document.getElementById('chat-input');
+const btnSend = document.getElementById('btn-send');
 const chatMessagesLog = document.getElementById('chat-messages-log');
 const chatPartnerTitle = document.getElementById('chat-partner-title');
 
@@ -46,15 +45,13 @@ const serverStatus = document.getElementById('server-status');
 const searchModeText = document.getElementById('search-mode-text');
 const searchTimer = document.getElementById('search-timer');
 
-// Mode Selection Event Listeners
-const modeCards = [btnModeText, btnModeVoice, btnModeVideo];
-modeCards.forEach(card => {
-    card.addEventListener('click', () => {
-        modeCards.forEach(c => c.classList.remove('active'));
-        card.classList.add('active');
-        selectedMode = card.dataset.mode;
+// The app is video-only, so keep matchmaking locked to video.
+if (btnModeVideo) {
+    btnModeVideo.classList.add('active');
+    btnModeVideo.addEventListener('click', () => {
+        selectedMode = 'video';
     });
-});
+}
 
 // View switcher helper
 function switchView(viewId) {
@@ -223,14 +220,57 @@ function sendDirectMessage(recipient, payload) {
     }
 }
 
+// Start capturing local camera & microphone feed
+async function setupLocalStream() {
+    if (localStream) {
+        return; // already active
+    }
+    try {
+        const constraints = {
+            audio: true,
+            video: selectedMode === 'video'
+        };
+        localStream = await navigator.mediaDevices.getUserMedia(constraints);
+        localVideo.srcObject = localStream;
+        localVideo.style.display = 'block';
+    } catch (err) {
+        console.error('Failed to access local media devices:', err);
+        appendSystemMessage(`System Error: Could not access camera/microphone. (${err.message})`);
+    }
+}
+
 // Start matchmaking broadcast
 function startSearch() {
     initMQTT();
 
-    // Reset state
+    // Reset WebRTC match connection state (keep local camera stream)
     cleanupWebRTC();
-    switchView('view-searching');
-    searchModeText.textContent = `Searching for a partner in ${selectedMode.toUpperCase()} Mode`;
+    
+    // Transition to the chat/video view immediately
+    switchView('view-chat');
+    
+    selectedMode = 'video';
+    
+    // Configure UI layout classes immediately so local camera box positions correctly and voice layout hides
+    chatLayout.className = 'chat-layout';
+    chatLayout.classList.add(`mode-${selectedMode}`);
+    if (selectedMode === 'video') {
+        chatLayout.classList.add('video-active');
+    }
+    
+    // Set UI to searching/connecting state
+    chatPartnerTitle.textContent = "Searching for a stranger...";
+    remotePlaceholder.style.display = 'flex';
+    remotePlaceholder.querySelector('p').textContent = "Searching for a stranger...";
+    
+    // Disable text message input while searching
+    chatInput.disabled = true;
+    chatInput.placeholder = "Waiting for a partner...";
+    if (btnSend) btnSend.disabled = true;
+    
+    // Start local camera stream immediately
+    setupLocalStream();
+
     startSearchTimer();
 
     // Subscribe to public matchmaking lobby
@@ -264,7 +304,15 @@ function stopSearching() {
 async function startChatSession() {
     // Clear old messages
     chatMessagesLog.innerHTML = '<div class="system-message">System: Connected to a stranger! Say hello.</div>';
-    chatPartnerTitle.textContent = `Connected with a Stranger (${selectedMode.toUpperCase()})`;
+    chatPartnerTitle.textContent = `Connected with a Stranger`;
+    
+    // Enable text message input
+    chatInput.disabled = false;
+    chatInput.placeholder = "Type a message to stranger...";
+    if (btnSend) btnSend.disabled = false;
+    
+    // Update remote placeholder text
+    remotePlaceholder.querySelector('p').textContent = "Waiting for stranger's camera...";
     
     // Configure UI mode layout
     chatLayout.className = 'chat-layout';
@@ -302,23 +350,14 @@ async function setupMediaAndWebRTC() {
             }
         };
 
-        // Capture local camera & mic
-        if (selectedMode === 'voice' || selectedMode === 'video') {
-            const constraints = {
-                audio: true,
-                video: selectedMode === 'video'
-            };
+        // Ensure local stream is running
+        await setupLocalStream();
 
-            localStream = await navigator.mediaDevices.getUserMedia(constraints);
-            
+        // Add local tracks to WebRTC peer connection
+        if (localStream) {
             localStream.getTracks().forEach(track => {
                 peerConnection.addTrack(track, localStream);
             });
-
-            localVideo.srcObject = localStream;
-            localVideo.style.display = 'block';
-        } else {
-            localVideo.style.display = 'none';
         }
 
         // Caller creates offer
@@ -333,8 +372,8 @@ async function setupMediaAndWebRTC() {
         }
 
     } catch (err) {
-        console.error('Failed to set up media/WebRTC:', err);
-        appendSystemMessage(`System Error: Could not access media devices. (${err.message})`);
+        console.error('Failed to set up WebRTC:', err);
+        appendSystemMessage(`System Error: WebRTC connection failure. (${err.message})`);
     }
 }
 
@@ -352,7 +391,7 @@ function handlePeerDisconnect() {
     }, 2000);
 }
 
-// Terminate match connection
+// Clean up WebRTC peer connection and remote stream
 function cleanupWebRTC() {
     if (isMatched && partnerId) {
         sendDirectMessage(partnerId, { type: 'disconnect', from: myId });
@@ -367,19 +406,23 @@ function cleanupWebRTC() {
         peerConnection = null;
     }
 
+    remoteVideo.srcObject = null;
+    remotePlaceholder.style.display = 'flex';
+}
+
+// Stop and clean up local camera and audio stream
+function cleanupLocalStream() {
     if (localStream) {
         localStream.getTracks().forEach(track => track.stop());
         localStream = null;
     }
-
     localVideo.srcObject = null;
-    remoteVideo.srcObject = null;
-    remotePlaceholder.style.display = 'flex';
 }
 
 function handleDisconnect() {
     stopSearching();
     cleanupWebRTC();
+    cleanupLocalStream();
     switchView('view-lobby');
 }
 

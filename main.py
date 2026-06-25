@@ -1,7 +1,6 @@
-import os
 import json
 import logging
-from typing import Dict, Set, List, Tuple
+from typing import Dict, List, Tuple
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -11,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("StrangerApp")
 
-app = FastAPI(title="Stranger Audio/Video/Chat App")
+app = FastAPI(title="BharatByte Video Chat App")
 
 # Allow CORS for local development and testing
 app.add_middleware(
@@ -22,10 +21,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Queues for matchmaking based on selected modes
+# Queue for video-only matchmaking.
 queues: Dict[str, List[WebSocket]] = {
-    "text": [],
-    "voice": [],
     "video": []
 }
 
@@ -73,9 +70,9 @@ async def websocket_endpoint(websocket: WebSocket):
             
             if msg_type == "search":
                 # Start matchmaking
-                mode = message.get("mode", "text")
+                mode = message.get("mode", "video")
                 if mode not in queues:
-                    mode = "text"
+                    mode = "video"
                 
                 # Cleanup any previous state before entering queue
                 clean_websocket(websocket)
