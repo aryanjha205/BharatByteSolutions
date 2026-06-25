@@ -157,6 +157,8 @@ svg {
 
 .gradient-text {
     background: linear-gradient(135deg, #12c65a 0%, #9747ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     display: inline-block;
 }
