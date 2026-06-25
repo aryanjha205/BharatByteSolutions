@@ -1,11 +1,15 @@
 const myId = 'user_' + Math.random().toString(36).substring(2, 9);
 let selectedMode = 'video'; // 'video' is active by default to match screenshot
+let socket = null;
 let mqttClient = null;
 let peerConnection = null;
 let localStream = null;
 let partnerId = null;
 let isMatched = false;
 let isInitiator = false;
+
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const useWebSocket = isLocalhost;
 
 let searchTimerInterval = null;
 let searchPublishInterval = null;
@@ -83,7 +87,86 @@ function stopSearchTimer() {
     clearInterval(searchTimerInterval);
 }
 
-// Initialize MQTT Client (Serverless matchmaker and signaling broker)
+// Initialize WebSocket connection to local server
+function initWebSocket() {
+    if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) {
+        return;
+    }
+
+    serverStatus.className = 'status-badge';
+    serverStatus.querySelector('.status-text').textContent = 'Connecting...';
+
+    const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    socket = new WebSocket(`${proto}//${window.location.host}/ws`);
+
+    socket.onopen = () => {
+        console.log('Connected to WebSocket signaling server.');
+        serverStatus.className = 'status-badge connected';
+        serverStatus.querySelector('.status-text').textContent = 'Connected';
+    };
+
+    socket.onclose = () => {
+        console.log('WebSocket connection closed.');
+        serverStatus.className = 'status-badge disconnected';
+        serverStatus.querySelector('.status-text').textContent = 'Disconnected';
+        if (useWebSocket) {
+            // Reconnect after 2 seconds
+            setTimeout(initWebSocket, 2000);
+        }
+    };
+
+    socket.onerror = (err) => {
+        console.error('WebSocket error:', err);
+        serverStatus.className = 'status-badge disconnected';
+        serverStatus.querySelector('.status-text').textContent = 'Connection Error';
+    };
+
+    socket.onmessage = async (event) => {
+        const msg = JSON.parse(event.data);
+        console.log('Incoming message:', msg.type);
+
+        switch (msg.type) {
+            case 'searching':
+                // Matchmaker is searching
+                break;
+            case 'matched':
+                isMatched = true;
+                isInitiator = msg.initiator;
+                startChatSession();
+                break;
+            case 'offer':
+                if (peerConnection) {
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(msg.offer));
+                    const answer = await peerConnection.createAnswer();
+                    await peerConnection.setLocalDescription(answer);
+                    sendSignalingMessage({ type: 'answer', answer: answer });
+                }
+                break;
+            case 'answer':
+                if (peerConnection) {
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(msg.answer));
+                }
+                break;
+            case 'candidate':
+                if (peerConnection && msg.candidate) {
+                    try {
+                        await peerConnection.addIceCandidate(new RTCIceCandidate(msg.candidate));
+                    } catch (e) {
+                        console.error('Error adding Ice Candidate:', e);
+                    }
+                }
+                break;
+            case 'chat_message':
+                appendChatMessage('Stranger', msg.message);
+                break;
+            case 'peer_disconnected':
+                handlePeerDisconnect();
+                break;
+        }
+    };
+}
+
+// Initialize MQTT Client (Serverless matchmaker and signaling broker for GitHub Pages)
 function initMQTT() {
     if (mqttClient && mqttClient.connected) {
         return;
@@ -128,7 +211,7 @@ function initMQTT() {
         
         // Handle incoming messages on our private topic
         if (topic === `bharatbyte/user/${myId}`) {
-            console.log('Incoming signaling message:', msg.type);
+            console.log('Incoming MQTT message:', msg.type);
 
             switch (msg.type) {
                 case 'invite':
@@ -183,7 +266,7 @@ function initMQTT() {
                         try {
                             await peerConnection.addIceCandidate(new RTCIceCandidate(msg.candidate));
                         } catch (e) {
-                            console.error('Error adding received ice candidate:', e);
+                            console.error('Error adding Ice Candidate:', e);
                         }
                     }
                     break;
@@ -220,6 +303,28 @@ function sendDirectMessage(recipient, payload) {
     }
 }
 
+// Initialize active connection based on environment
+function initConnection() {
+    if (useWebSocket) {
+        initWebSocket();
+    } else {
+        initMQTT();
+    }
+}
+
+// Unified signaling message sender
+function sendSignalingMessage(payload) {
+    if (useWebSocket) {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify(payload));
+        }
+    } else {
+        if (partnerId) {
+            sendDirectMessage(partnerId, payload);
+        }
+    }
+}
+
 // Start capturing local camera & microphone feed
 async function setupLocalStream() {
     if (localStream) {
@@ -241,7 +346,7 @@ async function setupLocalStream() {
 
 // Start matchmaking broadcast
 function startSearch() {
-    initMQTT();
+    initConnection();
 
     // Reset WebRTC match connection state (keep local camera stream)
     cleanupWebRTC();
@@ -273,30 +378,42 @@ function startSearch() {
 
     startSearchTimer();
 
-    // Subscribe to public matchmaking lobby
-    mqttClient.subscribe(`bharatbyte/lobby/${selectedMode}`);
-
-    // Publish our presence every 1.5 seconds to pair with strangers
-    clearInterval(searchPublishInterval);
-    searchPublishInterval = setInterval(() => {
-        if (mqttClient && mqttClient.connected) {
-            mqttClient.publish(`bharatbyte/lobby/${selectedMode}`, JSON.stringify({
-                id: myId,
-                timestamp: Date.now()
-            }));
+    if (useWebSocket) {
+        // Send search command to backend WebSocket
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            sendSignalingMessage({ type: 'search', mode: selectedMode });
+        } else {
+            // Queue it for when connection is established
+            socket.addEventListener('open', () => {
+                sendSignalingMessage({ type: 'search', mode: selectedMode });
+            }, { once: true });
         }
-    }, 1500);
+    } else {
+        // Subscribe to public matchmaking lobby
+        mqttClient.subscribe(`bharatbyte/lobby/${selectedMode}`);
+
+        // Publish our presence every 1.5 seconds to pair with strangers
+        clearInterval(searchPublishInterval);
+        searchPublishInterval = setInterval(() => {
+            if (mqttClient && mqttClient.connected) {
+                mqttClient.publish(`bharatbyte/lobby/${selectedMode}`, JSON.stringify({
+                    id: myId,
+                    timestamp: Date.now()
+                }));
+            }
+        }, 1500);
+    }
 }
 
 // Stop broadcasting search presence
 function stopSearching() {
-    clearInterval(searchPublishInterval);
-    searchPublishInterval = null;
     stopSearchTimer();
-    
-    // Unsubscribe from lobby
-    if (mqttClient) {
-        mqttClient.unsubscribe(`bharatbyte/lobby/${selectedMode}`);
+    if (!useWebSocket) {
+        clearInterval(searchPublishInterval);
+        searchPublishInterval = null;
+        if (mqttClient) {
+            mqttClient.unsubscribe(`bharatbyte/lobby/${selectedMode}`);
+        }
     }
 }
 
@@ -332,12 +449,19 @@ async function setupMediaAndWebRTC() {
 
         // Exchange candidates
         peerConnection.onicecandidate = (event) => {
-            if (event.candidate && partnerId) {
-                sendDirectMessage(partnerId, {
-                    type: 'candidate',
-                    candidate: event.candidate,
-                    from: myId
-                });
+            if (event.candidate) {
+                if (useWebSocket) {
+                    sendSignalingMessage({
+                        type: 'candidate',
+                        candidate: event.candidate
+                    });
+                } else {
+                    sendSignalingMessage({
+                        type: 'candidate',
+                        candidate: event.candidate,
+                        from: myId
+                    });
+                }
             }
         };
 
@@ -364,11 +488,18 @@ async function setupMediaAndWebRTC() {
         if (isInitiator) {
             const offer = await peerConnection.createOffer();
             await peerConnection.setLocalDescription(offer);
-            sendDirectMessage(partnerId, {
-                type: 'offer',
-                offer: offer,
-                from: myId
-            });
+            if (useWebSocket) {
+                sendSignalingMessage({
+                    type: 'offer',
+                    offer: offer
+                });
+            } else {
+                sendSignalingMessage({
+                    type: 'offer',
+                    offer: offer,
+                    from: myId
+                });
+            }
         }
 
     } catch (err) {
@@ -384,7 +515,8 @@ function handlePeerDisconnect() {
     
     // Auto re-search after a brief interval
     setTimeout(() => {
-        if (!isMatched && !searchPublishInterval && viewChat.classList.contains('active')) {
+        const isSearching = useWebSocket ? !isMatched : !searchPublishInterval;
+        if (isSearching && viewChat.classList.contains('active')) {
             appendSystemMessage('Matching you with a new stranger...');
             startSearch();
         }
@@ -393,7 +525,7 @@ function handlePeerDisconnect() {
 
 // Clean up WebRTC peer connection and remote stream
 function cleanupWebRTC() {
-    if (isMatched && partnerId) {
+    if (!useWebSocket && isMatched && partnerId) {
         sendDirectMessage(partnerId, { type: 'disconnect', from: myId });
     }
 
@@ -420,6 +552,9 @@ function cleanupLocalStream() {
 }
 
 function handleDisconnect() {
+    if (useWebSocket) {
+        sendSignalingMessage({ type: 'next' });
+    }
     stopSearching();
     cleanupWebRTC();
     cleanupLocalStream();
@@ -453,6 +588,9 @@ btnCancel.addEventListener('click', () => {
 });
 
 btnNext.addEventListener('click', () => {
+    if (useWebSocket) {
+        sendSignalingMessage({ type: 'next' });
+    }
     cleanupWebRTC();
     appendSystemMessage('Finding a new stranger...');
     startSearch();
@@ -467,12 +605,19 @@ chatForm.addEventListener('submit', (e) => {
     const text = chatInput.value.trim();
     if (!text) return;
 
-    if (isMatched && partnerId) {
-        sendDirectMessage(partnerId, {
-            type: 'chat_message',
-            message: text,
-            from: myId
-        });
+    if (isMatched) {
+        if (useWebSocket) {
+            sendSignalingMessage({
+                type: 'chat_message',
+                message: text
+            });
+        } else {
+            sendSignalingMessage({
+                type: 'chat_message',
+                message: text,
+                from: myId
+            });
+        }
         appendChatMessage('You', text);
         chatInput.value = '';
     } else {
@@ -480,7 +625,7 @@ chatForm.addEventListener('submit', (e) => {
     }
 });
 
-// Initialize MQTT connection on load
+// Initialize connection on load
 window.addEventListener('load', () => {
-    initMQTT();
+    initConnection();
 });
