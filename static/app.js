@@ -547,17 +547,15 @@ async function setupMediaAndWebRTC() {
 
 // Handle peer disconnection notice
 function handlePeerDisconnect() {
-    appendSystemMessage('Stranger disconnected.');
+    appendSystemMessage('Stranger skipped/disconnected. Finding a new stranger...');
     cleanupWebRTC();
     
-    // Auto re-search after a brief interval
+    // Auto re-search after a brief 500ms delay
     setTimeout(() => {
-        const isSearching = useWebSocket ? !isMatched : !searchPublishInterval;
-        if (isSearching && viewChat.classList.contains('active')) {
-            appendSystemMessage('Matching you with a new stranger...');
+        if (!isMatched && viewChat.classList.contains('active')) {
             startSearch();
         }
-    }, 2000);
+    }, 500);
 }
 
 // Clean up WebRTC peer connection and remote stream

@@ -7,7 +7,6 @@ const ASSETS = [
   '/static/icon-192.png',
   '/static/icon-512.png',
   '/static/hero_poster.png',
-  '/static/lobby_poster.png',
   'https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;700;800&display=swap',
   'https://unpkg.com/mqtt/dist/mqtt.min.js'
 ];

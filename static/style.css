@@ -1271,7 +1271,7 @@ svg {
         font-size: 22px;
     }
 
-    .brand-mark {
+    .brand-logo {
         width: 36px;
         height: 36px;
     }
@@ -1392,7 +1392,7 @@ svg {
         width: 100%;
         height: calc(100vh - 110px);
         grid-template-columns: 1fr;
-        grid-template-rows: 250px 1fr;
+        grid-template-rows: 350px 1fr;
     }
 
     .media-container {
@@ -1401,9 +1401,11 @@ svg {
     }
 
     .chat-layout.video-active .video-wrapper.local {
-        width: 118px;
-        height: 88px;
-        right: 28px;
-        bottom: 28px;
+        width: 150px;
+        height: 112px;
+        right: 18px;
+        bottom: 18px;
+        border: 2px solid #fff;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     }
 }
