@@ -8,7 +8,22 @@ let partnerId = null;
 let isMatched = false;
 let isInitiator = false;
 
-const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const isPrivateIP = (host) => {
+    return host.startsWith('192.168.') || 
+           host.startsWith('10.') || 
+           (host.startsWith('172.') && (function() {
+               const parts = host.split('.');
+               if (parts.length >= 2) {
+                   const second = parseInt(parts[1], 10);
+                   return second >= 16 && second <= 31;
+               }
+               return false;
+           })());
+};
+const isLocalhost = window.location.hostname === 'localhost' || 
+                    window.location.hostname === '127.0.0.1' || 
+                    window.location.hostname === '[::1]' ||
+                    isPrivateIP(window.location.hostname);
 const useWebSocket = isLocalhost;
 
 let searchTimerInterval = null;
@@ -344,7 +359,11 @@ async function setupLocalStream() {
                          navigator.msGetUserMedia;
 
         if (!getMedia) {
-            throw new Error("Your browser connection is not secure (requires HTTPS or localhost) or doesn't support camera access.");
+            let detail = "";
+            if (window.location.protocol === 'http:' && !isLocalhost) {
+                detail = " You are accessing the site via HTTP on a non-localhost origin, which browsers block. Please use HTTPS or access via http://localhost:8000.";
+            }
+            throw new Error("Your browser connection is not secure (requires HTTPS or localhost) or doesn't support camera access." + detail);
         }
 
         localStream = await getMedia(constraints);
@@ -646,4 +665,11 @@ chatForm.addEventListener('submit', (e) => {
 // Initialize connection on load
 window.addEventListener('load', () => {
     initConnection();
+
+    // Register Service Worker for PWA support
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('Service Worker registered. Scope:', reg.scope))
+            .catch(err => console.error('Service Worker registration failed:', err));
+    }
 });

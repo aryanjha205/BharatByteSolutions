@@ -2,6 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <script>
+        // Redirect non-localhost HTTP connections to HTTPS for secure context (camera/mic access)
+        const isLocalHostName = window.location.hostname === 'localhost' || 
+                                window.location.hostname === '127.0.0.1' || 
+                                window.location.hostname === '[::1]' ||
+                                window.location.hostname.startsWith('192.168.') ||
+                                window.location.hostname.startsWith('10.') ||
+                                (window.location.hostname.startsWith('172.') && (function() {
+                                    const parts = window.location.hostname.split('.');
+                                    if (parts.length >= 2) {
+                                        const second = parseInt(parts[1], 10);
+                                        return second >= 16 && second <= 31;
+                                    }
+                                    return false;
+                                })());
+
+        if (window.location.protocol === 'http:' && !isLocalHostName) {
+            window.location.href = 'https://' + window.location.host + window.location.pathname + window.location.search + window.location.hash;
+        }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BharatByte | Chat, Voice & Video with Strangers</title>
     <meta name="description" content="Instantly connect with random strangers around the world for text chat, voice calls, or video chats on BharatByte.">
@@ -9,6 +29,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="static/style.css">
+
+    <!-- PWA Support -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#12c65a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BharatByte">
+    <link rel="apple-touch-icon" href="static/icon-192.png">
 </head>
 <body>
     <div class="page-bg" aria-hidden="true">

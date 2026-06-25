@@ -1,5 +1,7 @@
 import json
 import logging
+import os
+import ipaddress
 from typing import Dict, List, Tuple
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
@@ -131,10 +133,115 @@ async def websocket_endpoint(websocket: WebSocket):
 # Serve static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+@app.get("/sw.js")
+async def get_sw():
+    return FileResponse("static/sw.js", media_type="application/javascript")
+
+@app.get("/manifest.json")
+async def get_manifest():
+    return FileResponse("static/manifest.json", media_type="application/json")
+
 @app.get("/")
 async def get_index():
     return FileResponse("index.html")
 
+def generate_self_signed_cert(cert_path="cert.pem", key_path="key.pem"):
+    try:
+        from cryptography import x509
+        from cryptography.x509.oid import NameOID
+        from cryptography.hazmat.primitives import hashes
+        from cryptography.hazmat.primitives.asymmetric import rsa
+        from cryptography.hazmat.primitives import serialization
+        import datetime
+
+        logger.info("Generating self-signed SSL certificate...")
+        
+        # Generate private key
+        private_key = rsa.generate_private_key(
+            public_exponent=65537,
+            key_size=2048,
+        )
+        
+        # Create certificate
+        subject = issuer = x509.Name([
+            x509.NameAttribute(NameOID.COUNTRY_NAME, "IN"),
+            x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, "Delhi"),
+            x509.NameAttribute(NameOID.LOCALITY_NAME, "New Delhi"),
+            x509.NameAttribute(NameOID.ORGANIZATION_NAME, "BharatByte"),
+            x509.NameAttribute(NameOID.COMMON_NAME, "localhost"),
+        ])
+        
+        cert = x509.CertificateBuilder().subject_name(
+            subject
+        ).issuer_name(
+            issuer
+        ).public_key(
+            private_key.public_key()
+        ).serial_number(
+            x509.random_serial_number()
+        ).not_valid_before(
+            datetime.datetime.now(datetime.timezone.utc)
+        ).not_valid_after(
+            datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=365)
+        ).add_extension(
+            x509.SubjectAlternativeName([
+                x509.DNSName("localhost"),
+                x509.DNSName("127.0.0.1"),
+                x509.IPAddress(ipaddress.IPv4Address("127.0.0.1")),
+            ]),
+            critical=False,
+        ).sign(private_key, hashes.SHA256())
+        
+        # Write private key
+        with open(key_path, "wb") as f:
+            f.write(private_key.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.TraditionalOpenSSL,
+                encryption_algorithm=serialization.NoEncryption(),
+            ))
+            
+        # Write certificate
+        with open(cert_path, "wb") as f:
+            f.write(cert.public_bytes(serialization.Encoding.PEM))
+            
+        logger.info(f"Self-signed SSL certificate successfully generated: {cert_path}, {key_path}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to generate self-signed certificate: {e}")
+        return False
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    
+    ssl_cert = "cert.pem"
+    ssl_key = "key.pem"
+    use_ssl = True
+
+    if not os.path.exists(ssl_cert) or not os.path.exists(ssl_key):
+        success = generate_self_signed_cert(ssl_cert, ssl_key)
+        if not success:
+            use_ssl = False
+            
+    # Print custom startup guidance for secure context
+    print("*" * 80)
+    print(" BHARATBYTE VIDEO CHAT APP - SERVER STARTING")
+    print("*" * 80)
+    if use_ssl:
+        print(" Running in HTTPS mode (secure context enabled).")
+        print(" Important: Your browser may show a 'Connection not private' security warning.")
+        print(" Click 'Advanced' and then 'Proceed' to bypass it for local testing.")
+        print(" URLs:")
+        print(" -> https://localhost:8000")
+        print(" -> https://127.0.0.1:8000")
+    else:
+        print(" Running in HTTP mode (no SSL).")
+        print(" Important: To test camera/mic features, you MUST access the site via localhost:")
+        print(" -> http://localhost:8000")
+        print(" -> http://127.0.0.1:8000")
+        print(" If you access using any other hostname or local network IP, browser camera access will fail.")
+    print("*" * 80)
+
+    if use_ssl:
+        uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, ssl_keyfile=ssl_key, ssl_certfile=ssl_cert)
+    else:
+        uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
