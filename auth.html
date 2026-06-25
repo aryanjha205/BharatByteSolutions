@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sign In or Register for a Bharat Byte account to unlock local directory searches, stays booking, PGs finder, and lister options.">
+    <title>Sign In & Register | Bharat Byte</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Icons (Boxicons) -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <!-- Custom CSS Stylesheet -->
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="manifest" href="static/manifest.json">
+    <link rel="apple-touch-icon" href="static/logo.png">
+</head>
+<body>
+
+    <!-- Navigation Header -->
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-custom">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center" href="index.html">
+                    <img src="static/logo.png" alt="Bharat Byte Logo" class="me-2" style="height: 40px;">
+                    <span class="fw-bold fs-4 text-primary" data-translate="app_title">Bharat Byte</span>
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html"><i class="bx bx-home-alt"></i> Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="listings.html"><i class="bx bx-compass"></i> Explore</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="listings.html?category=street_food"><i class="bx bx-restaurant"></i> Street Food</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="listings.html?category=pg"><i class="bx bx-bed"></i> Rooms & PG</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn-nav-strangers ms-1" href="strangers.html"><span class="pulse-indicator"></span> Talk to Strangers</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="moreDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                More
+                            </a>
+                            <ul class="dropdown-menu border-0 shadow" aria-labelledby="moreDropdown">
+                                <li><a class="dropdown-item" href="admin_login.html"><i class="bx bx-shield-quarter"></i> Admin Portal</a></li>
+                                <li id="nav-lister-studio" class="d-none"><a class="dropdown-item" href="dashboard.html"><i class="bx bx-grid-alt"></i> Lister Studio</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    
+                    <!-- Right Controls System -->
+                    <div class="d-flex align-items-center gap-3">
+                        
+                        <!-- Theme Toggle Button -->
+                        <button class="theme-switch-btn" title="Toggle Light/Dark Theme">
+                            <i class="bx bx-moon"></i>
+                        </button>
+                        
+                        <!-- Localizer Translator Switcher -->
+                        <div class="lang-wrapper">
+                            <select id="language-select" class="form-select form-select-sm border-secondary text-dark" style="cursor: pointer; font-weight: 500;">
+                                <option value="en">English (EN)</option>
+                                <option value="hi">हिन्दी (HI)</option>
+                                <option value="gu">ગુજરાતી (GU)</option>
+                            </select>
+                        </div>
+
+                        <!-- Real-time Database Notifications Trigger -->
+                        <div class="dropdown d-none" id="notif-dropdown-wrapper">
+                            <button class="btn btn-outline-secondary position-relative rounded-circle p-2" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px; display: flex; justify-content: center; align-items: center;">
+                                <i class="bx bx-bell fs-5"></i>
+                                <span id="notif-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">0</span>
+                            </button>
+                            <ul id="notif-list" class="dropdown-menu dropdown-menu-end p-2 border-0 shadow-lg" aria-labelledby="notifDropdown" style="width: 320px; border-radius: 12px; background: var(--bg-card); color: var(--text-main);">
+                                <h6 class="dropdown-header text-primary fw-bold mb-2 border-bottom pb-2">Notifications</h6>
+                                <div id="notif-items-container">
+                                    <li class="text-center py-3 text-muted small">No new notifications.</li>
+                                </div>
+                            </ul>
+                        </div>
+
+                        <!-- User Session Dropdown / Auth CTA -->
+                        <div id="auth-cta-container">
+                            <a href="auth.html" class="btn btn-primary px-4"><i class="bx bx-log-in"></i> Sign In</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <section class="py-5 d-flex align-items-center" style="min-height: calc(100vh - 200px);">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10 col-md-12">
+                        
+                        <!-- Upgraded Split Auth Card -->
+                        <div class="card border-0 shadow-lg overflow-hidden" style="border-radius: 24px; background: var(--bg-card); min-height: 580px;">
+                            <div class="row g-0 align-items-stretch" style="min-height: 580px;">
+                                <!-- Left side: Hero Poster Image (hidden on mobile) -->
+                                <div class="col-lg-6 d-none d-lg-block" style="background: url('static/hero.png') no-repeat center center; background-size: cover; min-height: 580px; position: relative;">
+                                    <div class="h-100 w-100 d-flex flex-column justify-content-end p-5 text-white" style="background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.25)); position: absolute; top:0; left:0;">
+                                        <h3 class="fw-bold mb-2 text-white">Bharat Byte 🇮🇳</h3>
+                                        <p class="text-white-50 mb-0">Discover local street food stalls, verified student PGs, boys & girls hostels, and essential daily services nearby.</p>
+                                    </div>
+                                </div>
+                                <!-- Right side: Auth forms -->
+                                <div class="col-lg-6 p-4 p-md-5 d-flex flex-column justify-content-center">
+                                    <div id="auth-panel-container">
+                                        
+                                        <!-- Tab toggle header -->
+                                        <div class="d-flex text-center mb-4 border-bottom pb-2">
+                                            <div class="flex-fill">
+                                                <button id="toggle-login-btn" class="btn btn-link text-decoration-none fw-bold fs-5 text-primary border-bottom border-primary border-3 pb-2 w-100 rounded-0">Login</button>
+                                            </div>
+                                            <div class="flex-fill">
+                                                <button id="toggle-register-btn" class="btn btn-link text-decoration-none fw-bold fs-5 text-muted pb-2 w-100 rounded-0">Register</button>
+                                            </div>
+                                        </div>
+
+                                        <!-- 1. LOGIN FORM CONTEXT -->
+                                        <div id="login-form-wrapper">
+                                            <form id="auth-login-form">
+                                                <div class="mb-3">
+                                                    <label class="small fw-semibold text-muted mb-1">Email Address</label>
+                                                    <input type="email" id="login-email" class="form-control form-control-custom" placeholder="e.g. amit@gmail.com" required>
+                                                </div>
+                                                <div class="mb-4">
+                                                    <label class="small fw-semibold text-muted mb-1">Password</label>
+                                                    <input type="password" id="login-password" class="form-control form-control-custom" placeholder="••••••••" required>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary w-100 py-3 fw-bold fs-6">Sign In Account <i class="bx bx-log-in"></i></button>
+                                            </form>
+                                        </div>
+
+                                        <!-- 2. REGISTRATION FORM CONTEXT -->
+                                        <div id="register-form-wrapper" class="d-none">
+                                            <form id="auth-register-form">
+                                                <div class="mb-3">
+                                                    <label class="small fw-semibold text-muted mb-1">Full Username</label>
+                                                    <input type="text" id="reg-username" class="form-control form-control-custom" placeholder="e.g. Amit Patel" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="small fw-semibold text-muted mb-1">Email Address</label>
+                                                    <input type="email" id="reg-email" class="form-control form-control-custom" placeholder="e.g. amit@gmail.com" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="small fw-semibold text-muted mb-1">Password</label>
+                                                    <input type="password" id="reg-password" class="form-control form-control-custom" placeholder="••••••••" required>
+                                                </div>
+                                                
+                                                <div class="mb-3 row g-2">
+                                                    <div class="col-md-6">
+                                                        <label class="small fw-semibold text-muted mb-1">Account Role</label>
+                                                        <select id="reg-role" class="form-select form-control-custom">
+                                                            <option value="user">User (Discovery)</option>
+                                                            <option value="lister">Lister (Vendor)</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="small fw-semibold text-muted mb-1">Referral Code (Optional)</label>
+                                                        <input type="text" id="reg-referral" class="form-control form-control-custom" placeholder="e.g. BBADMIN">
+                                                    </div>
+                                                </div>
+                                                
+                                                <button type="submit" class="btn btn-primary w-100 py-3 fw-bold fs-6">Create Account <i class="bx bx-user-plus"></i></button>
+                                            </form>
+                                        </div>
+
+                                        <!-- 3. OTP VERIFICATION SIMULATION PANELS -->
+                                        <div id="otp-form-wrapper" class="d-none text-center">
+                                            <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-circle d-inline-block mb-3" style="width: 60px; height: 60px; display: flex; justify-content: center; align-items: center;">
+                                                <i class="bx bx-envelope fs-2"></i>
+                                            </div>
+                                            <h4 class="fw-bold mb-1">Verify Your Email</h4>
+                                            <p class="text-muted small mb-4">We sent a 6-digit verification code to your registered email address.</p>
+                                            
+                                            <div class="alert alert-info py-2 small text-center mb-3">
+                                                <strong>Sandbox Verification Preview OTP:</strong> <span id="sandbox-otp-code" class="fw-extrabold text-primary">000000</span>
+                                            </div>
+
+                                            <form id="auth-otp-form">
+                                                <div class="mb-4">
+                                                    <input type="text" id="otp-code-input" class="form-control form-control-custom text-center py-2 fs-3 fw-bold letter-spacing-lg" placeholder="123456" maxlength="6" required>
+                                                </div>
+                                                <button type="submit" class="btn btn-success w-100 py-3 fw-bold fs-6">Verify & Launch <i class="bx bx-check-shield"></i></button>
+                                            </form>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Professional Footer -->
+    <footer class="footer-custom mt-5">
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-md-5">
+                    <h5 class="text-primary fw-bold mb-3">Bharat Byte 🇮🇳</h5>
+                    <p class="small text-muted mb-3" style="max-width: 360px;">
+                        India's ultimate all-in-one local discovery and accommodation marketplace. Linking street food lovers, renters, students, and local businesses in a single responsive, verified ecosystem.
+                    </p>
+                    <div class="d-flex gap-3 fs-4 text-secondary">
+                        <a href="#" class="text-reset"><i class="bx bxl-facebook-circle"></i></a>
+                        <a href="#" class="text-reset"><i class="bx bxl-twitter"></i></a>
+                        <a href="#" class="text-reset"><i class="bx bxl-instagram"></i></a>
+                        <a href="#" class="text-reset"><i class="bx bxl-linkedin-square"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="fw-bold mb-3 text-dark">Explore Byte</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2">
+                        <li><a href="listings.html?category=street_food" class="text-decoration-none text-muted">Street Food stalls</a></li>
+                        <li><a href="listings.html?category=pg" class="text-decoration-none text-muted">Student PGs</a></li>
+                        <li><a href="listings.html?category=hostel" class="text-decoration-none text-muted">Boys & Girls Hostels</a></li>
+                        <li><a href="listings.html?category=tiffin" class="text-decoration-none text-muted">Tiffin Services</a></li>
+                        <li><a href="listings.html?category=medical" class="text-decoration-none text-muted">24/7 Medical Pharmacies</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="fw-bold mb-3 text-dark">Legals & Security</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2 mb-4">
+                        <li><a href="privacy_policy.html" class="text-decoration-none text-muted">Privacy Policy</a></li>
+                        <li><a href="terms_of_service.html" class="text-decoration-none text-muted">Terms of Service</a></li>
+                    </ul>
+                    <p class="small text-muted">&copy; 2026 Bharat Byte Solutions Inc. Crafted with Pride across India.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JavaScript Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="static/js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleLogin = document.getElementById('toggle-login-btn');
+            const toggleReg = document.getElementById('toggle-register-btn');
+            
+            const loginWrapper = document.getElementById('login-form-wrapper');
+            const regWrapper = document.getElementById('register-form-wrapper');
+            const otpWrapper = document.getElementById('otp-form-wrapper');
+            
+            const loginForm = document.getElementById('auth-login-form');
+            const regForm = document.getElementById('auth-register-form');
+            const otpForm = document.getElementById('auth-otp-form');
+
+            const API_BASE_URL = (() => {
+                if (window.location.hostname && !['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+                    return 'https://bharat-byte-solutions.vercel.app';
+                }
+                if (window.location.protocol === 'file:' || window.location.port !== '5000') {
+                    return 'http://127.0.0.1:5000';
+                }
+                return '';
+            })();
+
+
+            // Toggle Views Animation binds
+            toggleLogin.addEventListener('click', () => {
+                toggleLogin.className = "btn btn-link text-decoration-none fw-bold fs-5 text-primary border-bottom border-primary border-3 pb-2 w-100 rounded-0";
+                toggleReg.className = "btn btn-link text-decoration-none fw-bold fs-5 text-muted pb-2 w-100 rounded-0";
+                loginWrapper.classList.remove('d-none');
+                regWrapper.classList.add('d-none');
+                otpWrapper.classList.add('d-none');
+            });
+
+            toggleReg.addEventListener('click', () => {
+                toggleReg.className = "btn btn-link text-decoration-none fw-bold fs-5 text-primary border-bottom border-primary border-3 pb-2 w-100 rounded-0";
+                toggleLogin.className = "btn btn-link text-decoration-none fw-bold fs-5 text-muted pb-2 w-100 rounded-0";
+                regWrapper.classList.remove('d-none');
+                loginWrapper.classList.add('d-none');
+                otpWrapper.classList.add('d-none');
+            });
+
+            // AJAX Login submission
+            if (loginForm) {
+                loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('login-email').value;
+                    const pass = document.getElementById('login-password').value;
+
+                    try {
+                        const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email: email, password: pass })
+                        });
+                        const val = await res.json();
+                        
+                        if (val.status === 'success') {
+                            alert(val.message);
+                            // Store user session state state-lessly on the client side
+                            localStorage.setItem('user_id', val.user_id);
+                            localStorage.setItem('username', val.username);
+                            localStorage.setItem('role', val.role);
+                            localStorage.setItem('reward_points', val.reward_points);
+
+                            if (val.role === 'lister') {
+                                window.location.href = 'dashboard.html';
+                            } else {
+                                window.location.href = 'index.html';
+                            }
+                        } else {
+                            alert(val.message);
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert("Connection failed to authentication endpoint.");
+                    }
+                });
+            }
+
+            // AJAX Register submission
+            if (regForm) {
+                regForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('reg-username').value;
+                    const email = document.getElementById('reg-email').value;
+                    const pass = document.getElementById('reg-password').value;
+                    const role = document.getElementById('reg-role').value;
+                    const ref = document.getElementById('reg-referral').value;
+
+                    try {
+                        const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                username: name,
+                                email: email,
+                                password: pass,
+                                role: role,
+                                referred_by: ref
+                            })
+                        });
+                        const val = await res.json();
+                        
+                        if (val.status === 'success') {
+                            alert(val.message);
+                            // Store user session state state-lessly on the client side
+                            localStorage.setItem('user_id', val.user_id);
+                            localStorage.setItem('username', val.username);
+                            localStorage.setItem('role', val.role);
+                            localStorage.setItem('reward_points', val.reward_points);
+
+                            if (val.role === 'lister') {
+                                window.location.href = 'dashboard.html';
+                            } else {
+                                window.location.href = 'index.html';
+                            }
+                        } else {
+                            alert(val.message);
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert("Connection failed to registration endpoint.");
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

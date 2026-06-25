@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Bharat Byte - All-in-one local discovery and accommodation marketplace in India. Find street food stalls, room rentals, PGs, hostels, tiffin services, and essential services near you.">
+    <title>Bharat Byte | All-in-One Local Discovery & Accommodation</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Icons (Boxicons) -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <!-- Leaflet.js Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Custom CSS Stylesheet -->
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="manifest" href="static/manifest.json">
+    <link rel="apple-touch-icon" href="static/logo.png">
+</head>
+<body>
+
+    <!-- Navigation Header -->
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-custom">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center" href="index.html">
+                    <img src="static/logo.png" alt="Bharat Byte Logo" class="me-2" style="height: 44px;">
+                    <div class="d-flex flex-column">
+                        <span class="fw-bold fs-4 text-dark lh-1" style="font-family: 'Space Grotesk', sans-serif;">Bharat Byte</span>
+                        <span class="text-muted small" style="font-size: 0.68rem; font-weight: 500; letter-spacing: 0.2px;">Discover Local. Live Better.</span>
+                    </div>
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="index.html"><i class="bx bx-home-alt"></i> Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="listings.html"><i class="bx bx-compass"></i> Explore</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="listings.html?category=street_food"><i class="bx bx-restaurant"></i> Street Food</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="listings.html?category=pg"><i class="bx bx-bed"></i> Rooms & PG</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn-nav-strangers ms-1" href="strangers.html"><span class="pulse-indicator"></span> Talk to Strangers</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="moreDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                More
+                            </a>
+                            <ul class="dropdown-menu border-0 shadow" aria-labelledby="moreDropdown">
+                                <li><a class="dropdown-item" href="admin_login.html"><i class="bx bx-shield-quarter"></i> Admin Portal</a></li>
+                                <li id="nav-lister-studio" class="d-none"><a class="dropdown-item" href="dashboard.html"><i class="bx bx-grid-alt"></i> Lister Studio</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    
+                    <!-- Right Controls System -->
+                    <div class="d-flex align-items-center gap-3">
+                        
+                        <!-- Theme Toggle Button -->
+                        <button class="theme-switch-btn" title="Toggle Light/Dark Theme">
+                            <i class="bx bx-moon"></i>
+                        </button>
+                        
+                        <!-- Localizer Translator Switcher -->
+                        <div class="lang-wrapper">
+                            <select id="language-select" class="form-select form-select-sm border-secondary text-dark" style="cursor: pointer; font-weight: 500;">
+                                <option value="en">English (EN)</option>
+                                <option value="hi">हिन्दी (HI)</option>
+                                <option value="gu">ગુજરાતી (GU)</option>
+                            </select>
+                        </div>
+
+                        <!-- Real-time Database Notifications Trigger -->
+                        <div class="dropdown" id="notif-dropdown-wrapper">
+                            <button class="btn btn-link text-decoration-none position-relative rounded-circle p-2 text-dark" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px; display: flex; justify-content: center; align-items: center;">
+                                <i class="bx bx-bell fs-4 text-dark"></i>
+                                <span id="notif-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem; padding: 3px 6px;">3</span>
+                            </button>
+                            <ul id="notif-list" class="dropdown-menu dropdown-menu-end p-2 border-0 shadow-lg" aria-labelledby="notifDropdown" style="width: 320px; border-radius: 12px; background: var(--bg-card); color: var(--text-main);">
+                                <h6 class="dropdown-header text-primary fw-bold mb-2 border-bottom pb-2">Notifications</h6>
+                                <div id="notif-items-container">
+                                    <li class="text-center py-3 text-muted small">No new notifications.</li>
+                                </div>
+                            </ul>
+                        </div>
+
+                        <!-- User Session Dropdown / Auth CTA -->
+                        <div id="auth-cta-container">
+                            <a href="auth.html" class="btn btn-primary px-4" style="background: #ff6b00; border: none; border-radius: 12px; font-weight: 600;"><i class="bx bx-user-circle"></i> Login / Sign Up</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section-premium-banner">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10 text-center d-flex flex-column align-items-center">
+                        <h1 class="display-4 fw-extrabold mb-3 text-white">
+                            Find <span style="color: var(--primary);">Everything</span> Nearby
+                        </h1>
+                        <p class="lead text-white-50 mb-4" data-translate="find_nearby">
+                            Street Food, Rooms, PGs & More! Find top-rated services near you.
+                        </p>
+                        
+                        <!-- Verification badges -->
+                        <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap mb-4">
+                            <span class="hero-badge-premium"><i class="bx bx-check-shield"></i> Verified Listings</span>
+                            <span class="hero-badge-premium"><i class="bx bx-purchase-tag"></i> Best Prices</span>
+                            <span class="hero-badge-premium"><i class="bx bx-lock-alt"></i> Secure & Easy</span>
+                            <span class="hero-badge-premium text-warning" style="border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.1);"><i class="bx bxs-video"></i> Live Stranger Calls & Call Animations</span>
+                        </div>
+                        
+                        <!-- Hero Core Search Bar (Airbnb style) -->
+                        <div class="hero-search-box-premium w-100 mt-2">
+                            <form action="listings.html" method="GET" class="d-flex align-items-center flex-grow-1 flex-wrap flex-lg-nowrap gap-3 w-100">
+                                <!-- Location -->
+                                <div class="search-input-field text-start">
+                                    <label><i class="bx bx-map-pin text-primary"></i> Current Location</label>
+                                    <input type="text" id="hero-gps-display" class="border-0 bg-transparent text-muted" value="Detecting Location..." readonly style="pointer-events: none; outline: none;">
+                                </div>
+                                <div class="search-divider"></div>
+                                <!-- Keywords -->
+                                <div class="search-input-field text-start">
+                                    <label><i class="bx bx-search text-primary"></i> What are you looking for?</label>
+                                    <input type="text" name="search" placeholder="e.g. Pizza, PG, Dosa, Hostel..." data-translate="search_placeholder">
+                                </div>
+                                <div class="search-divider"></div>
+                                <!-- Category -->
+                                <div class="search-input-field text-start">
+                                    <label><i class="bx bx-grid-alt text-primary"></i> All Categories</label>
+                                    <select name="category" class="bg-transparent border-0 text-muted fw-bold">
+                                        <option value="all">Select Category</option>
+                                        <option value="street_food">Street Food Stalls</option>
+                                        <option value="pg">PG Accommodations</option>
+                                        <option value="hostel">Hostels</option>
+                                        <option value="room">Rooms & Flats</option>
+                                        <option value="tiffin">Tiffin Services</option>
+                                        <option value="laundry">Laundry Services</option>
+                                        <option value="medical">Medical Pharmacies</option>
+                                        <option value="atm">ATMs</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="search-btn-premium ms-lg-2"><i class="bx bx-search"></i> Search</button>
+                            </form>
+                        </div>
+
+                        <!-- Popular Searches tag row -->
+                        <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap mt-4 small text-white-50">
+                            <span class="fw-semibold">Popular Searches:</span>
+                            <a href="listings.html?search=pizza" class="hero-tag-premium"><i class="bx bx-restaurant text-warning me-1"></i> Pizza</a>
+                            <a href="listings.html?search=Koramangala" class="hero-tag-premium"><i class="bx bx-map-pin text-danger me-1"></i> PG in Koramangala</a>
+                            <a href="listings.html?search=dosa" class="hero-tag-premium"><i class="bx bx-dish text-info me-1"></i> Dosa</a>
+                            <a href="listings.html?category=hostel" class="hero-tag-premium"><i class="bx bx-bed text-primary me-1"></i> Hostel near me</a>
+                            <a href="listings.html?category=tiffin" class="hero-tag-premium"><i class="bx bx-dish text-success me-1"></i> Tiffin Service</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Showcase (Mockup circular style) -->
+        <section class="py-5 bg-light border-top">
+            <div class="container">
+                <div class="categories-container-premium">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap flex-md-nowrap gap-3 overflow-auto pb-2" style="scrollbar-width: none; -ms-overflow-style: none;">
+                        <style>
+                            .categories-container-premium div::-webkit-scrollbar { display: none; }
+                        </style>
+                        <a href="listings.html?category=street_food" class="category-item-premium">
+                            <div class="category-circle-icon">🍔</div>
+                            <span>Street Food</span>
+                        </a>
+                        <a href="listings.html?category=room" class="category-item-premium">
+                            <div class="category-circle-icon">🏠</div>
+                            <span>Rooms</span>
+                        </a>
+                        <a href="listings.html?category=pg" class="category-item-premium">
+                            <div class="category-circle-icon">🛏️</div>
+                            <span>PG</span>
+                        </a>
+                        <a href="listings.html?category=hostel" class="category-item-premium">
+                            <div class="category-circle-icon">🏢</div>
+                            <span>Hostels</span>
+                        </a>
+                        <a href="listings.html?category=flat" class="category-item-premium">
+                            <div class="category-circle-icon">🏢</div>
+                            <span>Flats</span>
+                        </a>
+                        <a href="listings.html?category=tiffin" class="category-item-premium">
+                            <div class="category-circle-icon">🍱</div>
+                            <span>Tiffin Services</span>
+                        </a>
+                        <a href="listings.html?category=laundry" class="category-item-premium">
+                            <div class="category-circle-icon">🧺</div>
+                            <span>Laundry</span>
+                        </a>
+                        <a href="listings.html?category=medical" class="category-item-premium">
+                            <div class="category-circle-icon">💊</div>
+                            <span>Medical Stores</span>
+                        </a>
+                        <a href="listings.html?category=hospital" class="category-item-premium">
+                            <div class="category-circle-icon">🏥</div>
+                            <span>Hospitals</span>
+                        </a>
+                        <a href="listings.html?category=atm" class="category-item-premium">
+                            <div class="category-circle-icon">🏪</div>
+                            <span>ATMs</span>
+                        </a>
+                        <a href="listings.html" class="category-item-premium">
+                            <div class="category-circle-icon">💬</div>
+                            <span>More</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Popular Near You Listings Showcase -->
+        <section class="py-5 bg-white border-top">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h2 class="fw-bold text-dark mb-1" style="border-left: 4px solid var(--primary); padding-left: 12px;">Popular Near You</h2>
+                    </div>
+                    <a href="listings.html" class="text-decoration-none fw-bold" style="color: var(--primary);">View All <i class="bx bx-right-arrow-alt align-middle"></i></a>
+                </div>
+                
+                <div class="listings-scroll-container" id="featured-listings-container">
+                    <div class="col-12 text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-3 text-muted">Scanning Bharat Byte database...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom Premium Features Showcase -->
+        <section class="py-5 bg-light border-top">
+            <div class="container">
+                <div class="features-container-premium">
+                    <div class="row row-cols-1 row-cols-md-5 g-4">
+                        <div class="col">
+                            <div class="feature-card-premium">
+                                <div class="feature-icon-wrapper bg-danger bg-opacity-10 text-danger">
+                                    <i class="bx bx-map-pin"></i>
+                                </div>
+                                <h6>Nearby & Easy</h6>
+                                <p>Find the best places near your location</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="feature-card-premium">
+                                <div class="feature-icon-wrapper bg-success bg-opacity-10 text-success">
+                                    <i class="bx bx-shield-quarter"></i>
+                                </div>
+                                <h6>Verified & Trusted</h6>
+                                <p>Only verified listings for your safety</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="feature-card-premium">
+                                <div class="feature-icon-wrapper bg-warning bg-opacity-10 text-warning">
+                                    <i class="bx bx-wallet"></i>
+                                </div>
+                                <h6>Best Prices</h6>
+                                <p>Compare and choose what suits you</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="feature-card-premium">
+                                <div class="feature-icon-wrapper bg-info bg-opacity-10 text-info">
+                                    <i class="bx bx-bolt-circle"></i>
+                                </div>
+                                <h6>Fast & Easy</h6>
+                                <p>Quick search, easy filters & smooth experience</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="feature-card-premium">
+                                <div class="feature-icon-wrapper bg-primary bg-opacity-10 text-primary">
+                                    <i class="bx bx-headphone"></i>
+                                </div>
+                                <h6>24/7 Support</h6>
+                                <p>We're always here to help you</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Professional Footer -->
+    <footer class="footer-custom mt-5">
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-md-5">
+                    <h5 class="text-primary fw-bold mb-3">Bharat Byte 🇮🇳</h5>
+                    <p class="small text-muted mb-3" style="max-width: 360px;">
+                        India's ultimate all-in-one local discovery and accommodation marketplace. Linking street food lovers, renters, students, and local businesses in a single responsive, verified ecosystem.
+                    </p>
+                    <div class="d-flex gap-3 fs-4 text-secondary">
+                        <a href="#" class="text-reset"><i class="bx bxl-facebook-circle"></i></a>
+                        <a href="#" class="text-reset"><i class="bx bxl-twitter"></i></a>
+                        <a href="#" class="text-reset"><i class="bx bxl-instagram"></i></a>
+                        <a href="#" class="text-reset"><i class="bx bxl-linkedin-square"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="fw-bold mb-3 text-dark">Explore Byte</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2">
+                        <li><a href="listings.html?category=street_food" class="text-decoration-none text-muted">Street Food stalls</a></li>
+                        <li><a href="listings.html?category=pg" class="text-decoration-none text-muted">Student PGs</a></li>
+                        <li><a href="listings.html?category=hostel" class="text-decoration-none text-muted">Boys & Girls Hostels</a></li>
+                        <li><a href="listings.html?category=tiffin" class="text-decoration-none text-muted">Tiffin Services</a></li>
+                        <li><a href="listings.html?category=medical" class="text-decoration-none text-muted">24/7 Medical Pharmacies</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="fw-bold mb-3 text-dark">Legals & Security</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2 mb-4">
+                        <li><a href="privacy_policy.html" class="text-decoration-none text-muted">Privacy Policy</a></li>
+                        <li><a href="terms_of_service.html" class="text-decoration-none text-muted">Terms of Service</a></li>
+                    </ul>
+                    <p class="small text-muted">&copy; 2026 Bharat Byte Solutions Inc. Crafted with Pride across India.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+ 
+    <!-- Floating Talk to Strangers FAB -->
+    <a href="strangers.html" class="strangers-fab" title="Talk to Strangers">
+        <i class='bx bx-microphone'></i>
+        <span>Talk to Strangers</span>
+    </a>
+
+    <!-- Bootstrap & Leaflet JavaScript Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="static/js/main.js"></script>
+</body>
+</html>
