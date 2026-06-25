@@ -136,7 +136,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
 async def get_index():
-    return FileResponse("static/index.html")
+    return FileResponse("index.html")
 
 if __name__ == "__main__":
     import uvicorn
