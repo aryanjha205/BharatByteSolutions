@@ -7,7 +7,7 @@
     <meta name="description" content="Instantly connect with random strangers around the world for text chat, voice calls, or video chats on BharatByte.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
@@ -21,8 +21,18 @@
     <div class="app-container">
         <header class="app-header">
             <a class="brand" href="/" aria-label="BharatByte home">
-                <span class="brand-mark"><span></span></span>
-                <span>BharatByte</span>
+                <svg class="brand-logo" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#12c65a" />
+                            <stop offset="100%" stop-color="#9747ff" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="32" height="32" rx="8" fill="url(#logoGrad)" />
+                    <path d="M9 12C9 10.8954 9.89543 10 11 10H17C18.1046 10 19 10.8954 19 12V20C19 21.1046 18.1046 22 17 22H11C9.89543 22 9 21.1046 9 20V12Z" fill="white" />
+                    <path d="M20 14L23.5 11.5V20.5L20 18V14Z" fill="white" />
+                </svg>
+                <span>Bharat<span class="gradient-text">Byte</span></span>
             </a>
 
             <div id="server-status" class="status-badge">
@@ -151,6 +161,6 @@
     </div>
 
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-    <script src="static/app.js"></script>
+    <script src="static/app.js?v=2"></script>
 </body>
 </html>
