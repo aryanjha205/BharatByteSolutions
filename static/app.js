@@ -335,12 +335,30 @@ async function setupLocalStream() {
             audio: true,
             video: selectedMode === 'video'
         };
-        localStream = await navigator.mediaDevices.getUserMedia(constraints);
+
+        // Fallback check for browser-specific getUserMedia and secure contexts (HTTPS/localhost)
+        const getMedia = (navigator.mediaDevices && navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices)) ||
+                         navigator.getUserMedia ||
+                         navigator.webkitGetUserMedia ||
+                         navigator.mozGetUserMedia ||
+                         navigator.msGetUserMedia;
+
+        if (!getMedia) {
+            throw new Error("Your browser connection is not secure (requires HTTPS or localhost) or doesn't support camera access.");
+        }
+
+        localStream = await getMedia(constraints);
         localVideo.srcObject = localStream;
         localVideo.style.display = 'block';
     } catch (err) {
         console.error('Failed to access local media devices:', err);
-        appendSystemMessage(`System Error: Could not access camera/microphone. (${err.message})`);
+        let errorMsg = err.message;
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+            errorMsg = "Permission denied. Please allow camera and microphone access in your browser settings.";
+        } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+            errorMsg = "No camera or microphone found on your device.";
+        }
+        appendSystemMessage(`System Error: ${errorMsg}`);
     }
 }
 
