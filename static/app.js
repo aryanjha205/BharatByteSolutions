@@ -363,7 +363,7 @@ async function setupLocalStream() {
 }
 
 // Start matchmaking broadcast
-function startSearch() {
+async function startSearch() {
     initConnection();
 
     // Reset WebRTC match connection state (keep local camera stream)
@@ -392,7 +392,7 @@ function startSearch() {
     if (btnSend) btnSend.disabled = true;
     
     // Start local camera stream immediately
-    setupLocalStream();
+    await setupLocalStream();
 
     startSearchTimer();
 
@@ -597,8 +597,8 @@ function appendSystemMessage(text) {
 }
 
 // UI Event bindings
-btnStart.addEventListener('click', () => {
-    startSearch();
+btnStart.addEventListener('click', async () => {
+    await startSearch();
 });
 
 btnCancel.addEventListener('click', () => {
