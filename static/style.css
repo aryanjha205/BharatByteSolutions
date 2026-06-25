@@ -662,22 +662,22 @@ svg {
 
 .poster-stage {
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -55px;
-    height: 365px;
+    left: -6px;
+    right: -8px;
+    bottom: -82px;
+    height: 390px;
     pointer-events: none;
 }
 
 .poster-stage img {
     position: absolute;
-    right: 15px;
+    right: 0;
     bottom: 0;
-    width: min(590px, 77%);
-    max-height: 360px;
+    width: min(720px, 92%);
+    max-height: 410px;
     object-fit: contain;
     mix-blend-mode: multiply;
-    filter: drop-shadow(0 22px 26px rgba(20, 40, 29, 0.1));
+    filter: drop-shadow(0 22px 28px rgba(20, 40, 29, 0.12));
 }
 
 .chat-bubble-float {
@@ -711,13 +711,13 @@ svg {
 }
 
 .bubble-one {
-    left: 3%;
-    top: 55px;
+    left: 4%;
+    top: 86px;
 }
 
 .bubble-two {
-    right: 31%;
-    top: 64px;
+    right: 39%;
+    top: 96px;
     transform: scale(0.95);
 }
 
